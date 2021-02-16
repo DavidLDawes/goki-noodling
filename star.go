@@ -5,10 +5,12 @@ import (
 	"github.com/chewxy/math32"
 	"github.com/goki/gi/gi3d"
 	"github.com/goki/gi/gist"
+	"github.com/goki/mat32"
 	"github.com/spaolacci/murmur3"
 	"image/color"
 	"math"
 	"math/rand"
+	"strconv"
 )
 
 type classDetails struct {
@@ -76,7 +78,8 @@ var routeColors = []gist.Color{
 	gist.Color(color.RGBA{R: math.MaxUint8, G: 0, B: 0, A: math.MaxUint8}),
 	gist.Color(color.RGBA{R: math.MaxUint8, G: half + eighth, B: 0, A: math.MaxUint8}),
 	gist.Color(color.RGBA{R: math.MaxUint8, G: math.MaxUint8, B: 9, A: math.MaxUint8 - 32}),
-	gist.Color(color.RGBA{R: 0, G: 0, B: threeQuarters + eighth, A: math.MaxUint8 - 64}),
+	gist.Color(color.RGBA{R: 0, G: half, B: threeQuarters + eighth, A: math.MaxUint8 - 32}),
+	//gist.Color(color.RGBA{R: 0, G: 0, B: threeQuarters + eighth, A: math.MaxUint8 - 64}),
 }
 
 var lWidth = width{float32: 0.0005}
@@ -279,31 +282,54 @@ func distance(s1 star, s2 star) float32 {
 	return math32.Sqrt((s1.x-s2.x)*(s1.x-s2.x) + (s1.y-s2.y)*(s1.y-s2.y) + (s1.z-s2.z)*(s1.z-s2.z))
 }
 
-/*
-func getLine(sc *gi3d.Scene, s1 star, s2 star, lColor gist.Color) *gi3d.Solid {
-	//lName := "L" + strconv.Itoa(count)
-	lnsm := gi3d.AddNewLines(sc, "lines",
-			[]mat32.Vec3{ {X: scaled(s1.x), Y: scaled(s1.y), Z: scaled(s1.z)},
-			{X: scaled(s2.x), Y: scaled(s2.y), Z: scaled(s2.z) + 9.0}},
-			mat32.Vec2{.2, .1},
-			gi3d.OpenLines)
-	lns := gi3d.AddNewSolid(sc, sc, "lines", lnsm.Name())
-	lns.Pose.Pos.Set(0, 0, 10)
-	lns.Mat.Color.SetUInt8(255, 255, 0, 128) // alpha = .5
-	// sc.Wireframe = true                      // debugging
-	lns.Pose.Pos.Set(0, 0, 0)
-	return lns
+func renderStars(sc *gi3d.Scene) {
+	stars := make([]star, 0)
+	for x := uint32(0); x < 4; x++ {
+		for y := uint32(0); y < 2; y++ {
+			sector := sector{x: x, y: y, z: 0}
+			for _, star := range getSectorDetails(sector) {
+				stars = append(stars, star)
+			}
+		}
+	}
+	if len(stars) > 0 {
+		lines := make([]*simpleLine, 0)
+		sName := "sphere"
+		sphm := gi3d.AddNewSphere(sc, sName, 0.002, 24)
+		for id, star := range stars {
+			sph := gi3d.AddNewSolid(sc, sc, sName, sphm.Name())
+			sph.Pose.Pos.Set(star.x-2.5, star.y-1.0, star.z + 8.0)
+			sph.Mat.Color.SetUInt8(star.brightColor.R, star.brightColor.G, star.brightColor.B, star.brightColor.A)
+			for _, route := range checkForRoutes(sc, stars, star, id) {
+				lines = append(lines, route)
+			}
+		}
+
+		for id, lin := range lines {
+			thickness := float32(0.001)
+			if lin.color.A < math.MaxUint8-32 {
+				thickness = 0.00075
+			} else if lin.color.A < math.MaxUint8 {
+				thickness = 0.0005
+			}
+			lnsm := gi3d.AddNewLines(sc, "Lines-"+strconv.Itoa(id),
+				[]mat32.Vec3{
+					{X: lin.from.x - 2.5, Y: lin.from.y - 1.0, Z: lin.from.z + 8.0},
+					{X: lin.to.x - 2.5, Y: lin.to.y - 1.0, Z: lin.to.z + 8.0},
+				},
+				mat32.Vec2{X: thickness, Y: thickness},
+				gi3d.OpenLines,
+			)
+			solidLine := gi3d.AddNewSolid(sc, sc, "Lines-"+strconv.Itoa(id), lnsm.Name())
+			//solidLine.Pose.Pos.Set(lin.from.x - .5, lin.from.y - .5, lin.from.z + 8)
+			//lns.Mat.Color.SetUInt8(255, 255, 0, 128)
+			solidLine.Mat.Color = lin.color
+		}
+
+	}
 }
 
-func drawLine(sc *gi3d.Scene, id int, lnsm *gi3d.Lines) {
-	lin := gi3d.AddNewSolid(sc, sc, "l"+strconv.Itoa(id), lnsm.Name())
-	lin.Pose.Pos.Set(0, 0, 1)
-	//lns.Mat.Color.SetUInt8(255, 255, 0, 128)
-	lin.Mat.Color = white
-	lin.Mat.Color.A = math.MaxUint8
-}
 
-*/
 func checkForRoutes(sc *gi3d.Scene, stars []star, star star, id int) (result []*simpleLine) {
 	result = make([]*simpleLine, 0)
 	for _, innerStar := range stars[id+1:] {

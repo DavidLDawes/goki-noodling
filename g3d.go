@@ -1,8 +1,6 @@
 package main
 
 import (
-	"math"
-	"strconv"
 	"time"
 
 	"github.com/goki/gi/gi"
@@ -117,52 +115,8 @@ func mainrun() {
 	sc.BgColor.SetUInt8(0, 0, 0, 255) // sky blue-ish
 
 	gi3d.AddNewAmbientLight(sc, "ambient", 0.6, gi3d.DirectSun)
-	stars := make([]star, 0)
-	for x := uint32(0); x < 2; x++ {
-		for y := uint32(0); y < 2; y++ {
-			sector := sector{x: x, y: y, z: 0}
-			for _, star := range getSectorDetails(sector) {
-				stars = append(stars, star)
-			}
-		}
-	}
-	if len(stars) > 0 {
-		lines := make([]*simpleLine, 0)
-		sName := "sphere"
-		sphm := gi3d.AddNewSphere(sc, sName, 0.002, 24)
-		for id, star := range stars {
-			sph := gi3d.AddNewSolid(sc, sc, sName, sphm.Name())
-			sph.Pose.Pos.Set(star.x -.5, star.y - .5, star.z + 8)
-			sph.Mat.Color.SetUInt8(star.brightColor.R, star.brightColor.G, star.brightColor.B, star.brightColor.A)
-			for _, route := range checkForRoutes(sc, stars, star, id) {
-				lines = append(lines, route)
-			}
-		}
 
-		for id, lin := range lines {
-			thickness := float32(0.001)
-			if lin.color.A < math.MaxUint8 - 32 {
-				thickness = 0.00075
-			} else if lin.color.A < math.MaxUint8 {
-				thickness = 0.0005
-			}
-			lnsm := gi3d.AddNewLines(sc, "Lines-" + strconv.Itoa(id),
-				[]mat32.Vec3{
-					//{X: -.5, Y: -.5, Z: + 8.0},
-					//{X: lin.to.x - lin.from.x -.5, Y: lin.to.y - lin.from.y -.5, Z: lin.to.z - lin.from.z + 8.0},
-					{X: lin.from.x -.5, Y: lin.from.y -.5, Z: lin.from.z + 8.0},
-					{X: lin.to.x -.5, Y: lin.to.y -.5, Z: lin.to.z + 8.0},
-				},
-				mat32.Vec2{X: thickness, Y: thickness},
-				gi3d.OpenLines,
-			)
-			solidLine := gi3d.AddNewSolid(sc, sc, "Lines-" + strconv.Itoa(id), lnsm.Name())
-			//solidLine.Pose.Pos.Set(lin.from.x - .5, lin.from.y - .5, lin.from.z + 8)
-			//lns.Mat.Color.SetUInt8(255, 255, 0, 128)
-			solidLine.Mat.Color = lin.color
-		}
-
-	}
+	renderStars(sc)
 
 	txt := gi3d.AddNewText2D(sc, sc, "text", "Text2D can put <b>HTML</b> formatted<br>Text anywhere you might <i>want</i>")
 	// 	txt.SetProp("background-color", gist.Color{0, 0, 0, 0}) // transparent -- default

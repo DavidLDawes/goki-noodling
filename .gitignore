@@ -16,3 +16,7 @@ vendor/
 
 # IntelliJ noise
 .idea
+
+# the executable, if built
+gogi3
+
