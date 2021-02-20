@@ -35,8 +35,6 @@ func (an *Anim) Start(sc *gi3d.Scene, on bool) {
 	an.On = on
 	an.Speed = .1
 	an.GetObjs()
-	an.Ticker = time.NewTicker(10 * time.Millisecond) // 100 fps max
-	go an.Animate()
 }
 
 // GetObjs gets the objects to animate
@@ -48,23 +46,6 @@ func (an *Anim) GetObjs() {
 	gophi := ggp.Child(1)
 	if gophi == nil {
 		return
-	}
-}
-
-// Animate
-func (an *Anim) Animate() {
-	for {
-		if an.Ticker == nil || an.Scene == nil {
-			return
-		}
-		<-an.Ticker.C // wait for tick
-		if !an.On || an.Scene == nil {
-			continue
-		}
-
-		updt := an.Scene.UpdateStart()
-		an.Scene.UpdateEnd(updt) // triggers re-render -- don't need a full Update() which updates meshes
-		an.Ang += an.Speed
 	}
 }
 

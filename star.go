@@ -30,6 +30,7 @@ type classDetails struct {
 }
 
 type star struct {
+	id          int
 	class       string
 	brightColor color.RGBA
 	medColor    color.RGBA
@@ -50,6 +51,7 @@ type star struct {
 	dx float32
 	dy float32
 	dz float32
+	routes []*simpleLine
 }
 
 type sector struct {
@@ -68,18 +70,27 @@ type width struct {
 	float32
 }
 
+type jump struct {
+	color    gist.Color
+	parsecs  int
+	distance float32
+	s1ID	 int
+	s2ID     int
+}
 type simpleLine struct {
 	from		position
 	to 			position
-	color		gist.Color
+	route		jump
 }
 
 var routeColors = []gist.Color{
 	gist.Color(color.RGBA{R: math.MaxUint8, G: 0, B: 0, A: math.MaxUint8}),
 	gist.Color(color.RGBA{R: math.MaxUint8, G: half + eighth, B: 0, A: math.MaxUint8}),
-	gist.Color(color.RGBA{R: math.MaxUint8, G: math.MaxUint8, B: 9, A: math.MaxUint8 - 32}),
-	gist.Color(color.RGBA{R: 0, G: half, B: threeQuarters + eighth, A: math.MaxUint8 - 32}),
-	//gist.Color(color.RGBA{R: 0, G: 0, B: threeQuarters + eighth, A: math.MaxUint8 - 64}),
+	gist.Color(color.RGBA{R: math.MaxUint8, G: math.MaxUint8, B: 9, A: math.MaxUint8 - 8}),
+	gist.Color(color.RGBA{R: 0, G: math.MaxUint8, B: 0, A: math.MaxUint8 - 16}),
+	gist.Color(color.RGBA{R: quarter, G: quarter, B: math.MaxUint8, A: math.MaxUint8 - 24}),
+	gist.Color(color.RGBA{R: math.MaxUint8, G: 0, B: math.MaxUint8, A: math.MaxUint8 - 32}),
+	gist.Color(color.RGBA{R: quarter, G: quarter, B: math.MaxUint8, A: math.MaxUint8 - 40}),
 }
 
 var lWidth = width{float32: 0.0005}
@@ -89,6 +100,7 @@ var (
 	tween  = uint8(sevenEighths)
 	med    = uint8(threeQuarters)
 	dim    = uint8(half)
+	noJump = jump{gist.Color(color.RGBA{R: 0, G: 0, B: 0, A: 0}), 500000000.0, 500000000.0, -1, -1}
 
 	classO = classDetails{
 		class:       "O",
@@ -209,11 +221,12 @@ var (
 	classByZoom        = [11]int{7, 7, 7, 7, 7, 7, 6, 5, 4, 3, 2}
 )
 
-func getStarDetails(classDetails classDetails, sector sector, random1m *rand.Rand) []star {
-	stars := make([]star, 0)
-	loopSize := int32(423.728813559 * (classDetails.odds - classDetails.fudge + 2*classDetails.fudge*random1m.Float32()))
+func getStarDetails(classDetails classDetails, sector sector, random1m *rand.Rand) []*star {
+	stars := make([]*star, 0)
+	loopSize := int32(3000 * (classDetails.odds - classDetails.fudge + 2*classDetails.fudge*random1m.Float32()))
 	for i := 0; i < int(loopSize); i++ {
 		nextStar := star{}
+		nextStar.id = len(stars)
 		random1 := random1m.Float32()
 		nextStar.sx = random1m.Float32()
 		nextStar.sy = random1m.Float32()
@@ -228,14 +241,14 @@ func getStarDetails(classDetails classDetails, sector sector, random1m *rand.Ran
 		nextStar.radii = classDetails.minRadii + random1*classDetails.deltaRadii
 		nextStar.luminance = classDetails.minLum + random1*classDetails.deltaLum
 		nextStar.pixels = classDetails.pixels
-		stars = append(stars, nextStar)
+		stars = append(stars, &nextStar)
 	}
 
 	return stars
 }
 
-func getSectorDetails(fromSector sector) []star {
-	result := make([]star, 0)
+func getSectorDetails(fromSector sector) (result []*star) {
+	result = make([]*star, 0)
 	random1m := getHash(fromSector)
 	classCount := 0
 	for _, starDetails := range starDetailsByClass {
@@ -278,12 +291,12 @@ func getHash(aSector sector) *rand.Rand {
 	return rand.New(rand.NewSource(int64(id.Sum64())))
 }
 
-func distance(s1 star, s2 star) float32 {
+func distance(s1 *star, s2 *star) float32 {
 	return math32.Sqrt((s1.x-s2.x)*(s1.x-s2.x) + (s1.y-s2.y)*(s1.y-s2.y) + (s1.z-s2.z)*(s1.z-s2.z))
 }
 
 func renderStars(sc *gi3d.Scene) {
-	stars := make([]star, 0)
+	stars := make([]*star, 0)
 	for x := uint32(0); x < 4; x++ {
 		for y := uint32(0); y < 2; y++ {
 			sector := sector{x: x, y: y, z: 0}
@@ -307,10 +320,12 @@ func renderStars(sc *gi3d.Scene) {
 
 		for id, lin := range lines {
 			thickness := float32(0.001)
-			if lin.color.A < math.MaxUint8-32 {
-				thickness = 0.00075
-			} else if lin.color.A < math.MaxUint8 {
+			if lin.route.color.A < math.MaxUint8-23 {
+				thickness = 0.00025
+			} else if lin.route.color.A < math.MaxUint8 - 15 {
 				thickness = 0.0005
+			} else if lin.route.color.A < math.MaxUint8 - 7 {
+				thickness = 0.00075
 			}
 			lnsm := gi3d.AddNewLines(sc, "Lines-"+strconv.Itoa(id),
 				[]mat32.Vec3{
@@ -323,32 +338,68 @@ func renderStars(sc *gi3d.Scene) {
 			solidLine := gi3d.AddNewSolid(sc, sc, "Lines-"+strconv.Itoa(id), lnsm.Name())
 			//solidLine.Pose.Pos.Set(lin.from.x - .5, lin.from.y - .5, lin.from.z + 8)
 			//lns.Mat.Color.SetUInt8(255, 255, 0, 128)
-			solidLine.Mat.Color = lin.color
+			solidLine.Mat.Color = lin.route.color
 		}
 
 	}
 }
 
 
-func checkForRoutes(sc *gi3d.Scene, stars []star, star star, id int) (result []*simpleLine) {
+func checkForRoutes(sc *gi3d.Scene, stars []*star, star *star, id int) (result []*simpleLine) {
+	tempResult := make([]*simpleLine, 0)
 	result = make([]*simpleLine, 0)
-	for _, innerStar := range stars[id+1:] {
+	for id, innerStar := range stars[id+1:] {
 		routeColor := checkFor1Route(sc, star, innerStar)
-		if routeColor.A > 0 {
-			result = append(result, &simpleLine{
+		routeColor.s1ID = star.id
+		routeColor.s2ID = id
+		if routeColor.parsecs > -1 && routeColor.color.A > 0 {
+			newRoute := &simpleLine{
 				from: position{x: star.x, y: star.y, z: star.z},
 				to: position{x: innerStar.x, y: innerStar.y, z: innerStar.z},
-				color: routeColor})
+				route: routeColor,
+			}
+			tempResult = append(result, newRoute)
 		}
 	}
+	closest := make([]*simpleLine, 5)
+	if len(tempResult) > 3 {
+		for _, nextSimpleLine := range tempResult {
+			if nextSimpleLine.route.distance < tempResult[0].route.distance {
+				closest[0] = nextSimpleLine
+			} else if nextSimpleLine.route.distance < tempResult[1].route.distance {
+				closest[1] = nextSimpleLine
+			} else if nextSimpleLine.route.distance < tempResult[2].route.distance {
+				closest[2] = nextSimpleLine
+			} else if nextSimpleLine.route.distance < tempResult[2].route.distance {
+				closest[3] = nextSimpleLine
+			//} else if nextSimpleLine.route.distance < tempResult[2].route.distance {
+			//	closest[4] = nextSimpleLine
+			}
+		}
+		if closest[4].route.parsecs < 3 {
+			tempResult = closest
+		} else if closest[3].route.parsecs < 4 {
+			tempResult = []*simpleLine{closest[0], closest[1], closest[2], closest[3]}
+		} else if closest[2].route.parsecs < 4 {
+			tempResult = []*simpleLine{closest[0], closest[1], closest[2]}
+		} else if closest[1].route.parsecs < 5 {
+			tempResult = []*simpleLine{closest[0], closest[1]}
+		} else if closest[0].route.parsecs < 7 {
+			tempResult = []*simpleLine{closest[0]}
+		}
+	}
+	star.routes = append(star.routes, tempResult...)
+	result = append(result, tempResult...)
 	return
 }
 
-func checkFor1Route(sc *gi3d.Scene, s1 star, s2 star) (result gist.Color) {
-	delta := int(distance(s1, s2)*100 * parsecsPerLightYear)
-	result = gist.Color{R: 0, G: 0, B: 0, A: 0}
+func checkFor1Route(sc *gi3d.Scene, s1 *star, s2 *star) (result jump) {
+	routeLength := distance(s1, s2)*100 * parsecsPerLightYear
+	delta := int(routeLength)
 	if delta < len(routeColors) {
-		result = routeColors[delta]
+		result = jump{routeColors[delta], delta, routeLength, s1.id, s2.id}
+	} else {
+		result = noJump
 	}
 	// Return transparent black if there isn't one
 
