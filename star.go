@@ -287,8 +287,10 @@ func distance(s1 *star, s2 *star) float32 {
 	return math32.Sqrt((s1.x-s2.x)*(s1.x-s2.x) + (s1.y-s2.y)*(s1.y-s2.y) + (s1.z-s2.z)*(s1.z-s2.z))
 }
 
+var stars []*star
+
 func renderStars(sc *gi3d.Scene) {
-	stars := make([]*star, 0)
+	stars = make([]*star, 0)
 	for x := uint32(0); x < 4; x++ {
 		for y := uint32(0); y < 2; y++ {
 			sector := sector{x: x, y: y, z: 0}
@@ -358,8 +360,12 @@ func checkForRoutes(sc *gi3d.Scene, stars []*star, star *star, id int) (result [
 	closest := []*simpleLine{&noLine, &noLine,}
 	star.routes = make([]*jump, 0)
 	if len(tempResult) > 2 {
-		for _, nextSimpleLine := range tempResult {
-			if nextSimpleLine.route.distance < closest[0].route.distance {
+		thinner := make([]float32, 0)
+		for _, sLine := range tempResult {
+			thinner = append(thinner, float32(len(stars[sLine.route.s2ID].routes)/4))
+		}
+		for thinID, nextSimpleLine := range tempResult {
+			if nextSimpleLine.route.distance + thinner[thinID] < closest[0].route.distance {
 				if closest[0].route.distance < closest[1].route.distance {
 					closest[1] = closest[0]
 				}
