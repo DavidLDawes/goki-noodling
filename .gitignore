@@ -12,4 +12,11 @@
 *.out
 
 # Dependency directories (remove the comment below to include it)
-# vendor/
+vendor/
+
+# IntelliJ noise
+.idea
+
+# the executable, if built
+gogi3
+
