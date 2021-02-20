@@ -21,11 +21,11 @@ func main() {
 
 // Anim has control for animating
 type Anim struct {
-	On            bool         `desc:"run the animation"`
-	Speed         float32      `min:"0.01" step:"0.01" desc:"angular speed (in radians)"`
-	Ang           float32      `inactive:"+" desc:"current angle"`
-	Ticker        *time.Ticker `view:"-" desc:"the time.Ticker for animating the scene"`
-	Scene         *gi3d.Scene  `desc:"the scene"`
+	On     bool         `desc:"run the animation"`
+	Speed  float32      `min:"0.01" step:"0.01" desc:"angular speed (in radians)"`
+	Ang    float32      `inactive:"+" desc:"current angle"`
+	Ticker *time.Ticker `view:"-" desc:"the time.Ticker for animating the scene"`
+	Scene  *gi3d.Scene  `desc:"the scene"`
 }
 
 // Start starts the animation ticker timer -- if on is true, then
