@@ -4,6 +4,7 @@ import (
 	"github.com/goki/gi/gi"
 	"github.com/goki/gi/gi3d"
 	"github.com/goki/gi/gimain"
+	"github.com/goki/gi/gist"
 	"github.com/goki/gi/units"
 	"github.com/goki/ki/ki"
 	"github.com/goki/mat32"
@@ -16,8 +17,8 @@ func main() {
 }
 
 func mainrun() {
-	width := 1024
-	height := 768
+	width := 1280
+	height := 1024
 
 	// turn these on to see a traces of various stages of processing..
 	// ki.SignalTrace = true
@@ -39,14 +40,85 @@ func mainrun() {
 	mfr := win.SetMainFrame()
 	mfr.SetProp("spacing", units.NewEx(1))
 
-	trow := gi.AddNewLayout(mfr, "trow", gi.LayoutHoriz)
+	outer := gi.AddNewLayout(mfr, "outer", gi.LayoutHoriz)
+	outer.SetStretchMax()
+	info := gi.AddNewLayout(mfr, "info", gi.LayoutVert)
+	info.SetStretchMaxHeight()
+
+	hdrText := `<p><b>StarPort</b> %s</p>
+	<p><b>Size</b> %i</p>
+	<p><b>Atnosphere</b> %s</p>
+    <p><b>Size</b> %i</p>
+		
+	
+	 <large>Shortcuts: <kbd>Ctrl+Alt+P</kbd> = Preferences,
+	 <kbd>Ctrl+Shift+I</kbd> = Editor, <kbd>Ctrl/Cmd +/-</kbd> = zoom</large><br>
+	 Other styles: <u>underlining</u> and <abbr>abbr dotted uline</abbr> and <strike>strikethrough</strike><br>
+	 <q>and</q> <mark>marked text</mark> and <span style="text-decoration:overline">overline</span>
+	 and Sub<sub>script</sub> and Super<sup>script</sup>`
+
+
+	title := gi.AddNewLabel(info, "title", hdrText)
+	// title.Text = "header" // use this to test word wrapping
+	title.SetProp("white-space", gist.WhiteSpaceNormal)
+	title.SetProp("text-align", gist.AlignLeft)
+	title.SetProp("vertical-align", gist.AlignTop)
+	title.SetProp("font-family", "Times New Roman, serif")
+	title.SetProp("font-size", "large")
+	// title.SetProp("letter-spacing", 2)
+	title.SetProp("line-height", 1.5)
+
+	currentSystem := 0
+	but := gi.AddNewButton(info, "next")
+	but.SetText("Next")
+	but.Tooltip = "Move to the next system"
+	but.ButtonSig.Connect(win, func(recv, send ki.Ki, sig int64, data interface{}) {
+		if sig == int64(gi.ButtonClicked) {
+			currentSystem++
+			if currentSystem > len(stars) - 1 {
+				currentSystem = 0
+			}
+		}
+	})
+
+
+	but = gi.AddNewButton(info, "last")
+	but.SetText("Previous")
+	but.Tooltip = "Move to the previous system"
+	but.ButtonSig.Connect(win, func(recv, send ki.Ki, sig int64, data interface{}) {
+		if sig == int64(gi.ButtonClicked) {
+			currentSystem--
+			if currentSystem < 0 {
+				currentSystem = len(stars) - 1
+			}
+		}
+	})
+
+	main3d := gi.AddNewLayout(outer, "main3d", gi.LayoutHoriz)
+	main3d.SetStretchMax()
+/*
+	rows := make([]*gi.Layout, 4)
+	for id, row := range rows {
+
+		row = gi.AddNewLayout(main3d, fmt.Sprintf("row%i", id), gi.LayoutVert)
+		row.SetStretchMaxWidth()
+
+		row.SetProp("vertical-align", "top")
+		// row1.SetProp("horizontal-align", "justify")
+		row.SetProp("horizontal-align", "left")
+		row.SetProp("margin", 4.0)
+		row.SetProp("max-width", 200) // fiddling
+		row.SetProp("spacing", 6.0)
+	}
+*/
+	trow := gi.AddNewLayout(info, "trow", gi.LayoutHoriz)
 	trow.SetStretchMaxWidth()
 
 	//////////////////////////////////////////
 	//    Scene
 
-	gi.AddNewSpace(mfr, "scspc")
-	scrow := gi.AddNewLayout(mfr, "scrow", gi.LayoutHoriz)
+	gi.AddNewSpace(info, "scspc")
+	scrow := gi.AddNewLayout(info, "scrow", gi.LayoutHoriz)
 	scrow.SetStretchMax()
 
 	scvw := gi3d.AddNewSceneView(scrow, "sceneview")
@@ -62,7 +134,7 @@ func mainrun() {
 
 	renderStars(sc)
 
-	sc.Camera.Pose.Pos.Set(0, 0, 10)              // default position
+	sc.Camera.Pose.Pos.Set(0, 0, 2)              // default position
 	sc.Camera.LookAt(mat32.Vec3Zero, mat32.Vec3Y) // defaults to looking at origin
 	//	menu config etc
 

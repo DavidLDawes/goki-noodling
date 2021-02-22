@@ -82,7 +82,7 @@ const (
 
 var
 (
-	offsets = position{x:-2.5, y: -2.0, z: 8.0}
+	offsets = position{x:-2.5, y: -1.0, z: 0.0}
 
 	intensity = []uint8{
 		0, 0, instensityStep, 2 * instensityStep, 3 * instensityStep, 4 * instensityStep, 2 * instensityStep,
@@ -223,7 +223,7 @@ var
 
 func getStarDetails(classDetails classDetails, sector sector, random1m *rand.Rand) []*star {
 	stars := make([]*star, 0)
-	loopSize := int32(2000 * (classDetails.odds - classDetails.fudge + 2*classDetails.fudge*random1m.Float32()))
+	loopSize := int32(500 * (classDetails.odds - classDetails.fudge + 2*classDetails.fudge*random1m.Float32()))
 	for i := 0; i < int(loopSize); i++ {
 		nextStar := star{}
 		nextStar.id = len(stars)
@@ -416,8 +416,8 @@ func renderStars(sc *gi3d.Scene) {
 				}
 				jumpLines := gi3d.AddNewLines(sc, "Lines-"+strconv.Itoa(lin.jumpInfo.s1ID)+"-"+strconv.Itoa(lin.jumpInfo.s2ID),
 					[]mat32.Vec3{
-						{X: lin.from.x - 2.5, Y: lin.from.y - 1.0, Z: lin.from.z + 8.0},
-						{X: lin.to.x - 2.5, Y: lin.to.y - 1.0, Z: lin.to.z + 8.0},
+						{X: lin.from.x + offsets.x, Y: lin.from.y + offsets.y, Z: lin.from.z + offsets.z},
+						{X: lin.to.x + offsets.x, Y: lin.to.y + offsets.y, Z: lin.to.z + offsets.z},
 					},
 					mat32.Vec2{X: thickness, Y: thickness},
 					gi3d.OpenLines,

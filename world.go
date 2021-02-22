@@ -32,6 +32,10 @@ type world struct {
 	techLevelBase  int
 }
 
+type WorldStruct struct {
+	StrField   string      `desc:"a string field"`
+}
+
 type atmpsphere struct {
 	description string
 	base        int
