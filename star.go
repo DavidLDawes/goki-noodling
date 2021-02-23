@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/binary"
+	"github.com/goki/gi/gi"
 	"image/color"
 	"math"
 	"math/rand"
@@ -575,3 +576,27 @@ func traceJumps(id int) (visited []*jump) {
 	}
 	return visited
 }
+func putHeader(layout *gi.Layout) {
+	hdrText := `<p><b>StarPort</b> %s</p>
+	<p><b>Size</b> %i</p>
+	<p><b>Atnosphere</b> %s</p>
+    <p><b>Size</b> %i</p>
+		
+	
+	 <large>Shortcuts: <kbd>Ctrl+Alt+P</kbd> = Preferences,
+	 <kbd>Ctrl+Shift+I</kbd> = Editor, <kbd>Ctrl/Cmd +/-</kbd> = zoom</large><br>
+	 Other styles: <u>underlining</u> and <abbr>abbr dotted uline</abbr> and <strike>strikethrough</strike><br>
+	 <q>and</q> <mark>marked text</mark> and <span style="text-decoration:overline">overline</span>
+	 and Sub<sub>script</sub> and Super<sup>script</sup>`
+
+	title := gi.AddNewLabel(layout, "title", hdrText)
+	// title.Text = "header" // use this to test word wrapping
+	title.SetProp("white-space", gist.WhiteSpaceNormal)
+	title.SetProp("text-align", gist.AlignLeft)
+	title.SetProp("vertical-align", gist.AlignTop)
+	title.SetProp("font-family", "Times New Roman, serif")
+	title.SetProp("font-size", "large")
+	// title.SetProp("letter-spacing", 2)
+	title.SetProp("line-height", 1.5)
+}
+// To do: respect label, don't add more than once, figure out updates.
