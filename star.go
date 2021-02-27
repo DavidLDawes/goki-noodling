@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/binary"
-	"github.com/goki/gi/gi"
 	"image/color"
 	"math"
 	"math/rand"
@@ -78,26 +77,24 @@ type simpleLine struct {
 }
 
 const (
-	instensityStep = 8
+	intensityStep = 8
 )
 
-var
-(
-	offsets = position{x:-2.5, y: -1.0, z: 0.0}
+var (
+	offsets = position{x: -2.5, y: -1.0, z: 0.0}
 
 	intensity = []uint8{
-		0, 0, instensityStep, 2 * instensityStep, 3 * instensityStep, 4 * instensityStep, 2 * instensityStep,
+		0, 0, intensityStep, 2 * intensityStep, 3 * intensityStep, 4 * intensityStep, 2 * intensityStep,
 	}
 	jumpColors = []gist.Color{
-		gist.Color(color.RGBA{R: math.MaxUint8 - 32, G: 0, B: 0, A: math.MaxUint8 - intensity[0]}),
-		gist.Color(color.RGBA{R: math.MaxUint8 - 32, G: half + eighth - 32, B: 0, A: math.MaxUint8 - intensity[1]}),
-		gist.Color(color.RGBA{R: math.MaxUint8 - 32, G: math.MaxUint8 - 32, B: 0, A: math.MaxUint8 - intensity[2]}),
-		gist.Color(color.RGBA{R: 0, G: math.MaxUint8 - 32, B: 0, A: math.MaxUint8 - intensity[3]}),
-		gist.Color(color.RGBA{R: 0, G: 0, B: math.MaxUint8 - 32, A: math.MaxUint8 - intensity[4]}),
+		gist.Color(color.RGBA{R: math.MaxUint8 - eighth, G: 0, B: 0, A: math.MaxUint8 - intensity[0]}),
+		gist.Color(color.RGBA{R: math.MaxUint8 - eighth, G: half + eighth - eighth, B: 0, A: math.MaxUint8 - intensity[1]}),
+		gist.Color(color.RGBA{R: math.MaxUint8 - eighth, G: math.MaxUint8 - eighth, B: 0, A: math.MaxUint8 - intensity[2]}),
+		gist.Color(color.RGBA{R: 0, G: math.MaxUint8 - eighth, B: 0, A: math.MaxUint8 - intensity[3]}),
+		gist.Color(color.RGBA{R: 0, G: 0, B: math.MaxUint8 - eighth, A: math.MaxUint8 - intensity[4]}),
 		// gist.Color(color.RGBA{R: math.MaxUint8, G: 0, B: math.MaxUint8, A: math.MaxUint8 - intensity[step++]}),//
 	}
 
-	bright = uint8(math.MaxUint8)
 	tween  = uint8(sevenEighths)
 	med    = uint8(threeQuarters)
 	dim    = uint8(half)
@@ -256,16 +253,12 @@ func getSectorDetails(fromSector sector) (result []*star) {
 		nextClass := getStarDetails(starDetails, fromSector, random1m)
 		result = append(result, nextClass...)
 		classCount++
-		//if classCount > classByZoom[zoomIndex] {
-		//	break
+		// if classCount > classByZoom[zoomIndex] {
+		//  	break
 		//}
 	}
 
 	return result
-}
-
-func getSectorFromPosition(now position) sector {
-	return sector{uint32(now.x / 100), uint32(now.y / 100), uint32(now.z / 100)}
 }
 
 func getHash(aSector sector) *rand.Rand {
@@ -358,17 +351,17 @@ func renderStars(sc *gi3d.Scene) {
 			thicker := float32(1.0)
 
 			popMax := 0
-			bigWorld := worldFromStar(*stars[0])
+			bigWorld := worldFromStar(stars[0].id)
 			bigStar := *stars[0]
 			techMax := 0
-			techWorld := worldFromStar(*stars[0])
+			techWorld := worldFromStar(stars[0].id)
 			techStar := *stars[0]
 
 			for _, star := range stars {
-				world := worldFromStar(*star)
+				world := worldFromStar(star.id)
 				if world.techLevelBase > techMax {
 					techMax = world.techLevelBase
-					techWorld =  world
+					techWorld = world
 					techStar = *star
 				}
 				if world.popBase > popMax {
@@ -398,7 +391,7 @@ func renderStars(sc *gi3d.Scene) {
 				thicker = float32(1.0)
 				for _, eachJump := range traceJumps {
 					if lin.jumpInfo == eachJump {
-						brighter = 32
+						brighter = eighth
 						thicker = float32(10.0)
 					}
 				}
@@ -428,7 +421,6 @@ func renderStars(sc *gi3d.Scene) {
 				// lns.Mat.Color.SetUInt8(255, 255, 0, 128)
 				solidLine.Mat.Color = lin.jumpInfo.color
 			}
-
 		}
 	}
 	print("Done")
@@ -505,6 +497,7 @@ func addVisits(base []*jump, addition []*jump) (result []*jump) {
 			result = append(result, nextJump)
 		}
 	}
+
 	return
 }
 
@@ -576,27 +569,16 @@ func traceJumps(id int) (visited []*jump) {
 	}
 	return visited
 }
-func putHeader(layout *gi.Layout) {
-	hdrText := `<p><b>StarPort</b> %s</p>
-	<p><b>Size</b> %i</p>
-	<p><b>Atnosphere</b> %s</p>
-    <p><b>Size</b> %i</p>
-		
-	
-	 <large>Shortcuts: <kbd>Ctrl+Alt+P</kbd> = Preferences,
-	 <kbd>Ctrl+Shift+I</kbd> = Editor, <kbd>Ctrl/Cmd +/-</kbd> = zoom</large><br>
-	 Other styles: <u>underlining</u> and <abbr>abbr dotted uline</abbr> and <strike>strikethrough</strike><br>
-	 <q>and</q> <mark>marked text</mark> and <span style="text-decoration:overline">overline</span>
-	 and Sub<sub>script</sub> and Super<sup>script</sup>`
 
-	title := gi.AddNewLabel(layout, "title", hdrText)
-	// title.Text = "header" // use this to test word wrapping
-	title.SetProp("white-space", gist.WhiteSpaceNormal)
-	title.SetProp("text-align", gist.AlignLeft)
-	title.SetProp("vertical-align", gist.AlignTop)
-	title.SetProp("font-family", "Times New Roman, serif")
-	title.SetProp("font-size", "large")
-	// title.SetProp("letter-spacing", 2)
-	title.SetProp("line-height", 1.5)
+func showStar(star star, sc *gi3d.Scene) {
+	starSphere := gi3d.AddNewSolid(sc, sc, sName, sphereModel.Name())
+	starSphere.Pose.Pos.Set(star.x+offsets.x, star.y+offsets.y, star.z+offsets.z)
+	starSphere.Mat.Color.SetUInt8(star.brightColor.R, star.brightColor.G, star.brightColor.B, star.brightColor.A)
 }
-// To do: respect label, don't add more than once, figure out updates.
+
+func showBigStar(star star, sc *gi3d.Scene) {
+	starSphere := gi3d.AddNewSolid(sc, sc, sName, sphereModel.Name())
+	starSphere.Pose.Pos.Set(star.x+offsets.x, star.y+offsets.y, star.z+offsets.z)
+	starSphere.Mat.Color.SetUInt8(star.brightColor.R, star.brightColor.G, star.brightColor.B, star.brightColor.A)
+}
+

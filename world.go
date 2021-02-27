@@ -2,6 +2,10 @@ package main
 
 import (
 	"encoding/binary"
+	"fmt"
+	"github.com/goki/gi/gi"
+	"github.com/goki/gi/gist"
+	"image/color"
 	"math"
 	"math/rand"
 	"strconv"
@@ -10,33 +14,35 @@ import (
 )
 
 type world struct {
-	starport       string
-	scout          bool
-	naval          bool
-	military       bool
-	gasGiant       bool
-	gasGiants      int
-	size           int
-	sizeBase       int
-	atmosphere     atmpsphere
-	atmosphereBase int
-	hydro          int
-	hydroBase      int
-	population     uint64
-	popBase        int
-	lawLevel       string
-	lawBase        int
-	government     string
-	governmentBase int
-	techLevel      string
-	techLevelBase  int
+	starID                int
+	starPort              string
+	scout                 bool
+	navy                  bool
+	military              bool
+	gasGiants             int
+	size                  int
+	sizeBase              int
+	atmosphereDescription atmosphereDetails
+	atmosphereBase        int
+	hydro                 int
+	hydroBase             int
+	population            uint64
+	popBase               int
+	lawLevel              string
+	lawBase               int
+	government            string
+	governmentBase        int
+	techLevel             string
+	techLevelBase         int
+	worldHeader           string
+	worldLayout           *gi.Layout
+	SystemDetails         *gi.Label
+	jumpButtons           []*gi.Button
+	jumps                 []int
 }
 
-type WorldStruct struct {
-	StrField   string      `desc:"a string field"`
-}
-
-type atmpsphere struct {
+var workingWorld = &world{}
+type atmosphereDetails struct {
 	description string
 	base        int
 	tainted     bool
@@ -50,7 +56,28 @@ type atmpsphere struct {
 	insidious   bool
 }
 
-func worldHash(fromStar star) *rand.Rand {
+var (
+	noAtmosphere = atmosphereDetails{description: "No atmosphere", base: 0, tainted: false, trace: false, veryThin: false, thin: false, standard: false, dense: false, exotic: false, corrosive: false, insidious: false}
+	traceAtmosphere = atmosphereDetails{description: "Trace", base: 1, tainted: false, trace: true, veryThin: false, thin: false, standard: false, dense: false, exotic: false, corrosive: false, insidious: false}
+	veryThinTainted = atmosphereDetails{description: "Very thin, tainted", base: 2, tainted: true, trace: false, veryThin: true, thin: false, standard: false, dense: false, exotic: false, corrosive: false, insidious: false}
+	veryThin = atmosphereDetails{description: "Very thin", base: 3, tainted: false, trace: false, veryThin: true, thin: false, standard: false, dense: false, exotic: false, corrosive: false, insidious: false}
+	thinTainted = atmosphereDetails{description: "Thin, tainted", base: 4, tainted: true, trace: false, veryThin: false, thin: true, standard: false, dense: false, exotic: false, corrosive: false, insidious: false}
+	thin = atmosphereDetails{description: "Thin", base: 5, tainted: false, trace: false, veryThin: false, thin: true, standard: false, dense: false, exotic: false, corrosive: false, insidious: false}
+	standard = atmosphereDetails{description: "Standard", base: 6, tainted: false, trace: false, veryThin: false, thin: false, standard: true, dense: false, exotic: false, corrosive: false, insidious: false}
+	standardTainted = atmosphereDetails{description: "Standard, tainted", base: 7, tainted: true, trace: false, veryThin: false, thin: false, standard: true, dense: false, exotic: false, corrosive: false, insidious: false}
+	dense = atmosphereDetails{description: "Dense", base: 8, tainted: false, trace: false, veryThin: false, thin: false, standard: false, dense: true, exotic: false, corrosive: false, insidious: false}
+	denseTainted = atmosphereDetails{description: "Dense, tainted", base: 9, tainted: true, trace: false, veryThin: false, thin: false, standard: false, dense: true, exotic: false, corrosive: false, insidious: false}
+	exotic = atmosphereDetails{description: "Exotic", base: 10, tainted: false, trace: false, veryThin: false, thin: false, standard: false, dense: false, exotic: true, corrosive: false, insidious: false}
+	corrosive = atmosphereDetails{description: "Corrosive", base: 11, tainted: false, trace: false, veryThin: false, thin: false, standard: false, dense: false, exotic: false, corrosive: true, insidious: false}
+	insidious = atmosphereDetails{description: "Insidious", base: 12, tainted: false, trace: false, veryThin: false, thin: false, standard: false, dense: false, exotic: false, corrosive: false, insidious: true}
+
+
+	atmospheres = []atmosphereDetails {
+		noAtmosphere, traceAtmosphere, veryThinTainted, veryThin, thinTainted, thin, standard, standardTainted, dense, denseTainted, exotic, corrosive, insidious, insidious, insidious, insidious, insidious,
+	}
+)
+
+func worldHash(fromStar *star) *rand.Rand {
 	id := murmur3.New64()
 	buf := make([]byte, 4)
 	binary.LittleEndian.PutUint32(buf, uint32(65535*fromStar.x-float32(int(fromStar.x))))
@@ -74,104 +101,49 @@ func worldHash(fromStar star) *rand.Rand {
 	return rand.New(rand.NewSource(int64(id.Sum64())))
 }
 
-func worldFromStar(fromStar star) (toWorld world) {
-	random1s := worldHash(fromStar)
-	starPort := starPort(random1s)
+func worldFromStar(fromStarID int) (newWorld *world) {
+	random1s := worldHash(stars[fromStarID])
 
-	scout := false
-	mod := 0
-	if starPort == "A" {
-		mod = -3
-	} else if starPort == "B" {
-		mod = -2
-	} else if starPort == "C" {
-		mod = -1
-	} else if starPort == "E" || starPort == "X" {
-		mod = -99
-	}
-	if twoD6(random1s)+mod > 6 {
-		scout = true
-	}
+	starPort := getStarPort(random1s)
+	size, sizeBase := getSize(random1s)
+	atmosphereDescription, atmosphereBase := getAtmosphere(random1s, sizeBase)
+	hydro, hydroBase := getHydro(random1s, sizeBase)
+	population, popBase := getPopulation(random1s)
+	lawLevel, lawBase := getLawLevel(random1s, popBase)
+	government, governmentBase := getGovernment(random1s, popBase)
+	techLevel, tl := getTechLevel(random1s, starPort, size, atmosphereBase, hydroBase, popBase, governmentBase)
 
-	navy := false
-	mod = 0
-	if starPort == "C" || starPort == "D" || starPort == "E" || starPort == "X" {
-		mod = -99
-	}
-	if twoD6(random1s)+mod > 6 {
-		navy = true
-	}
-
-	gasGiant := false
-	gasGiants := 0
-	if twoD6(random1s) < 10 {
-		gasGiant = true
-
-		switch twoD6(random1s) {
-		case 2, 3, 4, 5, 6, 7, 8, 9:
-			gasGiants = 1
-		case 10, 11:
-			gasGiants = 2
-		case 12, 13:
-			gasGiants = 3
-		default:
-			gasGiants = 1
-		}
-	}
-
-	km, size := size(random1s)
-	atm, atmBase := atmosphere(random1s, size)
-	hydro, hydroBase := hydrographics(random1s, size)
-	pop, popBase := population(random1s)
-	lawDescription, lawBase := lawLevel(random1s, popBase)
-	govDescription, govBase := government(random1s, popBase)
-
-	mil := false
-	if (popBase < 4 && (starPort == "A" || starPort == "B")) ||
-		(popBase > 7 && (starPort == "A" || starPort == "B") && !atm.tainted) {
-		if twoD6(random1s) > 5 {
-			mil = true
-		}
-	} else if (popBase < 4 && (starPort == "A" || starPort == "B")) ||
-		(popBase > 7 && (starPort == "A" || starPort == "B")) {
-		if twoD6(random1s) > 8 {
-			mil = true
-		}
-	} else {
-		if twoD6(random1s) > 9 {
-			mil = true
-		}
-	}
-
-	techLevel, tl := techLevel(random1s, starPort, size, atmBase, hydroBase, popBase, govBase)
-
-	toWorld = world{
-		starport:       starPort,
-		scout:          scout,
-		naval:          navy,
-		military:       mil,
-		gasGiant:       gasGiant,
-		gasGiants:      gasGiants,
-		size:           km,
-		sizeBase:       size,
-		atmosphere:     atm,
-		atmosphereBase: atmBase,
-		hydro:          hydro,
-		hydroBase:      hydroBase,
-		population:     pop,
-		popBase:        popBase,
-		lawLevel:       lawDescription,
-		lawBase:        lawBase,
-		government:     govDescription,
-		governmentBase: govBase,
-		techLevel:      techLevel,
-		techLevelBase:  tl,
+	header := fmt.Sprintf(hdrText, fromStarID, starPort, size, atmosphereDescription.description, size, hydro,
+		population, government, lawBase	, tl, techLevel)
+	newWorld = &world{
+		starID:                fromStarID,
+		starPort:              starPort,
+		scout:                 getScout(random1s, starPort),
+		navy:                  getNavy(random1s, starPort),
+		military:              getMilitary(random1s, starPort, popBase, atmospheres[atmosphereBase].tainted),
+		gasGiants:             getGasGiants(random1s),
+		size:                  size,
+		sizeBase:              sizeBase,
+		atmosphereDescription: atmosphereDescription,
+		atmosphereBase:        atmosphereBase,
+		hydro:                 hydro,
+		hydroBase:             hydroBase,
+		population:            population,
+		popBase:               popBase,
+		lawLevel:              lawLevel,
+		lawBase:               lawBase,
+		government:            government,
+		governmentBase:        governmentBase,
+		techLevel:             techLevel,
+		techLevelBase:         tl,
+		worldHeader:           header,
+		SystemDetails:         workingWorld.SystemDetails,
 	}
 
 	return
 }
 
-func starPort(rand *rand.Rand) (portType string) {
+func getStarPort(rand *rand.Rand) (portType string) {
 	huh := twoD6(rand)
 	switch huh {
 	case 2, 3, 4:
@@ -193,232 +165,70 @@ func starPort(rand *rand.Rand) (portType string) {
 	return
 }
 
-func size(rand *rand.Rand) (kilometers int, base int) {
+func getSize(rand *rand.Rand) (kilometers int, base int) {
 	base = twoD6(rand) - 2
 	kilometers = 1600 * base
 
 	return
 }
 
-func atmosphere(rand *rand.Rand, size int) (result atmpsphere, base int) {
-	randomAtmpsphere := twoD6(rand) + size - 7
-	if randomAtmpsphere < 0 {
-		randomAtmpsphere = 0
-	}
-	switch randomAtmpsphere {
-	case 0:
-		return atmpsphere{
-			description: "No atmosphere",
-			base:        0,
-			tainted:     false,
-			trace:       false,
-			veryThin:    false,
-			thin:        false,
-			standard:    false,
-			dense:       false,
-			exotic:      false,
-			corrosive:   false,
-			insidious:   false,
-		}, randomAtmpsphere
+func getAtmosphereFromID(fromAtmosphereBase int) (result atmosphereDetails) {
+	switch fromAtmosphereBase {
 	default:
-		return atmpsphere{
-			description: "No atmosphere",
-			base:        0,
-			tainted:     false,
-			trace:       false,
-			veryThin:    false,
-			thin:        false,
-			standard:    false,
-			dense:       false,
-			exotic:      false,
-			corrosive:   false,
-			insidious:   false,
-		}, randomAtmpsphere
+		return noAtmosphere
+	case 0:
+		return noAtmosphere
 	case 1:
-		return atmpsphere{
-			description: "Trace",
-			base:        1,
-			tainted:     false,
-			trace:       true,
-			veryThin:    false,
-			thin:        false,
-			standard:    false,
-			dense:       false,
-			exotic:      false,
-			corrosive:   false,
-			insidious:   false,
-		}, randomAtmpsphere
+		return traceAtmosphere
 	case 2:
-		return atmpsphere{
-			description: "Very thin, tainted",
-			base:        2,
-			tainted:     true,
-			trace:       false,
-			veryThin:    true,
-			thin:        false,
-			standard:    false,
-			dense:       false,
-			exotic:      false,
-			corrosive:   false,
-			insidious:   false,
-		}, randomAtmpsphere
+		return veryThinTainted
 	case 3:
-		return atmpsphere{
-			description: "Very thin",
-			base:        3,
-			tainted:     false,
-			trace:       false,
-			veryThin:    true,
-			thin:        false,
-			standard:    false,
-			dense:       false,
-			exotic:      false,
-			corrosive:   false,
-			insidious:   false,
-		}, randomAtmpsphere
+		return veryThin
 	case 4:
-		return atmpsphere{
-			description: "Thin, tainted",
-			base:        4,
-			tainted:     true,
-			trace:       false,
-			veryThin:    false,
-			thin:        true,
-			standard:    false,
-			dense:       false,
-			exotic:      false,
-			corrosive:   false,
-			insidious:   false,
-		}, randomAtmpsphere
+		return thinTainted
 	case 5:
-
-		return atmpsphere{
-			description: "Thin",
-			base:        5,
-			tainted:     false,
-			trace:       false,
-			veryThin:    false,
-			thin:        true,
-			standard:    false,
-			dense:       false,
-			exotic:      false,
-			corrosive:   false,
-			insidious:   false,
-		}, randomAtmpsphere
+		return thin
 	case 6:
-		return atmpsphere{
-			description: "Standard",
-			base:        6,
-			tainted:     false,
-			trace:       false,
-			veryThin:    false,
-			thin:        false,
-			standard:    true,
-			dense:       false,
-			exotic:      false,
-			corrosive:   false,
-			insidious:   false,
-		}, randomAtmpsphere
+		return standard
 	case 7:
-		return atmpsphere{
-			description: "Standard, tainted",
-			base:        7,
-			tainted:     false,
-			trace:       false,
-			veryThin:    false,
-			thin:        false,
-			standard:    true,
-			dense:       false,
-			exotic:      false,
-			corrosive:   false,
-			insidious:   false,
-		}, randomAtmpsphere
+		return standardTainted
 	case 8:
-		return atmpsphere{
-			description: "Dense",
-			base:        8,
-			tainted:     false,
-			trace:       false,
-			veryThin:    false,
-			thin:        false,
-			standard:    false,
-			dense:       true,
-			exotic:      false,
-			corrosive:   false,
-			insidious:   false,
-		}, randomAtmpsphere
+		return dense
 	case 9:
-		return atmpsphere{
-			description: "Dense, tainted",
-			base:        9,
-			tainted:     true,
-			trace:       false,
-			veryThin:    false,
-			thin:        false,
-			standard:    false,
-			dense:       true,
-			exotic:      false,
-			corrosive:   false,
-			insidious:   false,
-		}, randomAtmpsphere
+		return denseTainted
 	case 10:
-		return atmpsphere{
-			description: "Exotic",
-			base:        10,
-			tainted:     false,
-			trace:       false,
-			veryThin:    false,
-			thin:        false,
-			standard:    false,
-			dense:       false,
-			exotic:      true,
-			corrosive:   false,
-			insidious:   false,
-		}, randomAtmpsphere
+		return exotic
 	case 11:
-		return atmpsphere{
-			description: "Corrosive",
-			base:        11,
-			tainted:     false,
-			trace:       false,
-			veryThin:    false,
-			thin:        false,
-			standard:    false,
-			dense:       false,
-			exotic:      false,
-			corrosive:   true,
-			insidious:   false,
-		}, randomAtmpsphere
+		return corrosive
 	case 12, 13, 14, 15, 16:
-		return atmpsphere{
-			description: "Insidious",
-			base:        12,
-			tainted:     false,
-			trace:       false,
-			veryThin:    false,
-			thin:        false,
-			standard:    false,
-			dense:       false,
-			exotic:      false,
-			corrosive:   false,
-			insidious:   true,
-		}, randomAtmpsphere
+		return insidious
 	}
+
 }
 
-func hydrographics(rand *rand.Rand, size int) (percent int, base int) {
+
+func getAtmosphere(rand *rand.Rand, size int) (result atmosphereDetails, base int) {
+	base = twoD6(rand) + size - 7
+	if base < 0 {
+		base = 0
+	}
+	result = getAtmosphereFromID(base)
+	return
+}
+
+func getHydro(rand *rand.Rand, size int) (percent int, base int) {
 	percent = 10 * (twoD6(rand) + size - 7)
 	if percent < 0 {
 		percent = 0.0
 	} else if percent > 100 {
 		percent = 100
 	}
-	base = percent/10
+	base = percent / 10
 
 	return
 }
 
-func population(rand *rand.Rand) (total uint64, base int) {
+func getPopulation(rand *rand.Rand) (total uint64, base int) {
 	base = twoD6(rand) - 2.0
 	log := rand.Float32()
 	if base < 0 {
@@ -428,30 +238,32 @@ func population(rand *rand.Rand) (total uint64, base int) {
 	}
 	if base < 1 {
 		total = 0
+
 		return
 	}
-	total = uint64(math.Exp(float64(float32(base) + log) * math.Log(10)))
+	total = uint64(math.Exp(float64(float32(base)+log) * math.Log(10)))
+
 	return
 }
 
 var govByBase = []string{
 	"No government",
-	"Oompany/Corporation",
+	"Company/Corporation",
 	"Participating Democracy",
 	"Self-Perpetuating Oligarchy",
 	"Representative Democracy",
 	"Feudal Technocracy",
 	"Captive Government",
-	"Balkanizatiomn",
-	"Civil Service Bereaucracy",
-	"Impersonal Bereaucracy",
+	"Balkanization",
+	"Civil Service Bureaucracy",
+	"Impersonal Bureaucracy",
 	"Charismatic Dictator",
 	"Non-Charismatic Leader",
 	"Charismatic Oligarchy",
 	"Religious Dictatorship",
 }
 
-func government(rand *rand.Rand, popBase int) (description string, base int) {
+func getGovernment(rand *rand.Rand, popBase int) (description string, base int) {
 	base = d6(rand) + d6(rand) + popBase - 7
 	if base < 0 {
 		base = 0
@@ -470,13 +282,13 @@ var lawLevelByBase = []string{
 	"Military weapons (automatics) prohibited",
 	"Light assault weapons prohibited",
 	"Personal firearms prohibited",
-	"Most firearsm (except shotgun) prohibited, weapons discouraged",
+	"Most firearms (except shotgun) prohibited, weapons discouraged",
 	"Shotguns prohibited",
 	"Long bladed weapons prohibited",
-	"Possession of any weappon outside residence prohibited",
+	"Possession of any weapon outside residence prohibited",
 }
 
-func lawLevel(rand *rand.Rand, govBase int) (description string, base int) {
+func getLawLevel(rand *rand.Rand, govBase int) (description string, base int) {
 	base = d6(rand) + d6(rand) + govBase - 7
 	if base < 0 {
 		base = 0
@@ -484,23 +296,26 @@ func lawLevel(rand *rand.Rand, govBase int) (description string, base int) {
 		base = len(lawLevelByBase) - 1
 	}
 	description = lawLevelByBase[base]
+
 	return
 }
 
-func techLevel(rand *rand.Rand, starPort string, size int, atm int, hydro int, pop int, gov int) (techLevel string, tl int) {
+func getTechLevel(rand *rand.Rand, starPort string, size int, atm int, hydro int, pop int, gov int) (techLevel string, tl int) {
 	diceModifier := 0
-	if starPort == "A" {
+	switch starPort {
+	case "A":
 		diceModifier = 6
-	} else if starPort == "B" {
+	case "B":
 		diceModifier = 4
-	} else if starPort == "C" {
+	case "C":
 		diceModifier = 2
-	} else if starPort == "X" {
+	case "X":
 		diceModifier = -4
 	}
-	if size < 2 {
+	switch size {
+	case 0, 1:
 		diceModifier += 2
-	} else if size < 5 {
+	case 2, 3, 4:
 		diceModifier++
 	}
 	if atm < 4 || atm > 9 {
@@ -510,8 +325,9 @@ func techLevel(rand *rand.Rand, starPort string, size int, atm int, hydro int, p
 		diceModifier += hydro - 8
 	}
 	if pop > 0 && pop < 6 {
-		diceModifier += 1
-	} else if pop > 8 {
+		diceModifier++
+	}
+	if pop > 8 {
 		diceModifier += 2 * (pop - 8)
 	}
 	if gov == 0 || gov == 5 {
@@ -584,20 +400,129 @@ func techLevel(rand *rand.Rand, starPort string, size int, atm int, hydro int, p
 
 func twoD6(rand *rand.Rand) (result int) {
 	result = d6(rand) + d6(rand)
-	return
-}
 
-func twoFloatD6(rand *rand.Rand) (result float32) {
-	result = 6.0*rand.Float32() + 6.0*rand.Float32() + 2.0
-	if result * (1 + 1/36) >= 12 {
-		result = 12.0
-	} else {
-		result = (result - 2.0) * (1 + 1/36) + 2.0
-	}
 	return
 }
 
 func d6(rand *rand.Rand) (result int) {
 	result = rand.Intn(6) + 1
+
 	return
+}
+
+func getScout(rand *rand.Rand, starPort string) (scout bool) {
+	scout = false
+	mod := 0
+	switch starPort {
+	case "A":
+		mod = -3
+	case "B":
+		mod = -2
+	case "C":
+		mod = -1
+	case "E", "X":
+		mod = -99
+	}
+	if twoD6(rand)+mod > 6 {
+		scout = true
+	}
+
+	return
+}
+
+func getNavy(rand *rand.Rand, starPort string) (navy bool) {
+	navy = false
+	if starPort != "C" && starPort != "D" && starPort != "E" && starPort != "X" {
+		if twoD6(rand) > 6 {
+			navy = true
+		}
+	}
+
+	return
+}
+
+func getGasGiants(rand *rand.Rand) (gasGiants int) {
+	if twoD6(rand) < 10 {
+		switch twoD6(rand) {
+		case 2, 3, 4, 5, 6, 7, 8, 9:
+			gasGiants = 1
+		case 10, 11:
+			gasGiants = 2
+		case 12, 13:
+			gasGiants = 3
+		default:
+			gasGiants = 1
+		}
+	} else {
+		gasGiants = 0
+	}
+
+	return
+}
+
+func getMilitary(rand *rand.Rand, starPort string, popBase int, tainted bool) (mil bool) {
+	if popBase < 4 && (starPort == "A" || starPort == "B") ||
+		popBase > 7 && (starPort == "A" || starPort == "B") {
+		if tainted {
+			if twoD6(rand) > 5 {
+				mil = true
+			} else {
+				mil = false
+			}
+		} else {
+			if twoD6(rand) > 8 {
+				mil = true
+			} else {
+				mil = false
+			}
+		}
+	} else {
+		if twoD6(rand) > 9 {
+			mil = true
+		} else {
+			mil = false
+		}
+	}
+
+	return
+}
+
+func putWorldHeader(layout *gi.Layout) {
+	workingWorld.worldLayout = layout
+	workingWorld.SystemDetails = gi.AddNewLabel(layout, "SystemDetails", hdrText)
+	workingWorld.SystemDetails.CurBgColor = gist.Color{R: 0, G: 0, B: 0, A: 255}
+	workingWorld.SystemDetails.SetProp("white-space", gist.WhiteSpaceNormal)
+	workingWorld.SystemDetails.SetProp("background-color", color.Opaque)
+	workingWorld.SystemDetails.SetProp("text-align", gist.AlignLeft)
+	workingWorld.SystemDetails.SetProp("vertical-align", gist.AlignTop)
+	workingWorld.SystemDetails.SetProp("font-family", "Times New Roman, serif")
+	workingWorld.SystemDetails.SetProp("font-size", "small")
+	// SystemDetails.SetProp("letter-spacing", 2)
+	workingWorld.SystemDetails.SetProp("line-height", 1.5)
+}
+
+func addJumpButtons() {
+	workingWorld.jumpButtons = make([]*gi.Button, 0)
+	workingWorld.jumps = make([]int, 0)
+
+	for id, nextJump := range jumpsByStar[workingWorld.starID] {
+		name := "jump-" + strconv.Itoa(id)
+		nextJumpButton := gi.AddNewButton(workingWorld.worldLayout, name)
+		nextJumpButton.SetText("System " + strconv.Itoa(id))
+		workingWorld.jumpButtons = append(workingWorld.jumpButtons, nextJumpButton)
+		if workingWorld.starID == nextJump.s1ID {
+			workingWorld.jumps = append(workingWorld.jumps, nextJump.s2ID)
+		} else {
+			workingWorld.jumps = append(workingWorld.jumps, nextJump.s1ID)
+		}
+	}
+
+}
+
+func getWorldHeader() string {
+	return workingWorld.SystemDetails.Text
+}
+
+func  setWorldHeader(header string) {
+	workingWorld.SystemDetails.SetText(header)
 }
