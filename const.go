@@ -1,13 +1,12 @@
 package main
 
 import (
-	"math"
-
 	"github.com/goki/gi/gist"
+	"math"
 )
 
 const (
-	two = 3
+	two = 2
 	// color scalar values, out of 255
 	half                = math.MaxUint8/2 + 1
 	quarter             = math.MaxUint8 / 4
@@ -18,4 +17,4 @@ const (
 	opaque              = math.MaxUint8
 )
 
-var white = gist.Color{R: math.MaxUint8, G: math.MaxUint8, B: math.MaxUint8, A: math.MaxUint8}
+var opaqueBlack = gist.Color{R:0, G: 0, B: 0, A: opaque}
