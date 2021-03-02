@@ -1,8 +1,9 @@
 package main
 
 import (
-	"github.com/goki/gi/gist"
 	"math"
+
+	"github.com/goki/gi/gist"
 )
 
 const (
@@ -17,4 +18,4 @@ const (
 	opaque              = math.MaxUint8
 )
 
-var opaqueBlack = gist.Color{R:0, G: 0, B: 0, A: opaque}
+var opaqueBlack = gist.Color{R: 0, G: 0, B: 0, A: opaque}

@@ -3,12 +3,13 @@ package main
 import (
 	"encoding/binary"
 	"fmt"
-	"github.com/goki/gi/gi"
-	"github.com/goki/gi/gist"
 	"image/color"
 	"math"
 	"math/rand"
 	"strconv"
+
+	"github.com/goki/gi/gi"
+	"github.com/goki/gi/gist"
 
 	"github.com/spaolacci/murmur3"
 )
@@ -42,6 +43,7 @@ type world struct {
 }
 
 var workingWorld = &world{}
+
 type atmosphereDetails struct {
 	description string
 	base        int
@@ -57,22 +59,21 @@ type atmosphereDetails struct {
 }
 
 var (
-	noAtmosphere = atmosphereDetails{description: "No atmosphere", base: 0, tainted: false, trace: false, veryThin: false, thin: false, standard: false, dense: false, exotic: false, corrosive: false, insidious: false}
+	noAtmosphere    = atmosphereDetails{description: "No atmosphere", base: 0, tainted: false, trace: false, veryThin: false, thin: false, standard: false, dense: false, exotic: false, corrosive: false, insidious: false}
 	traceAtmosphere = atmosphereDetails{description: "Trace", base: 1, tainted: false, trace: true, veryThin: false, thin: false, standard: false, dense: false, exotic: false, corrosive: false, insidious: false}
 	veryThinTainted = atmosphereDetails{description: "Very thin, tainted", base: 2, tainted: true, trace: false, veryThin: true, thin: false, standard: false, dense: false, exotic: false, corrosive: false, insidious: false}
-	veryThin = atmosphereDetails{description: "Very thin", base: 3, tainted: false, trace: false, veryThin: true, thin: false, standard: false, dense: false, exotic: false, corrosive: false, insidious: false}
-	thinTainted = atmosphereDetails{description: "Thin, tainted", base: 4, tainted: true, trace: false, veryThin: false, thin: true, standard: false, dense: false, exotic: false, corrosive: false, insidious: false}
-	thin = atmosphereDetails{description: "Thin", base: 5, tainted: false, trace: false, veryThin: false, thin: true, standard: false, dense: false, exotic: false, corrosive: false, insidious: false}
-	standard = atmosphereDetails{description: "Standard", base: 6, tainted: false, trace: false, veryThin: false, thin: false, standard: true, dense: false, exotic: false, corrosive: false, insidious: false}
+	veryThin        = atmosphereDetails{description: "Very thin", base: 3, tainted: false, trace: false, veryThin: true, thin: false, standard: false, dense: false, exotic: false, corrosive: false, insidious: false}
+	thinTainted     = atmosphereDetails{description: "Thin, tainted", base: 4, tainted: true, trace: false, veryThin: false, thin: true, standard: false, dense: false, exotic: false, corrosive: false, insidious: false}
+	thin            = atmosphereDetails{description: "Thin", base: 5, tainted: false, trace: false, veryThin: false, thin: true, standard: false, dense: false, exotic: false, corrosive: false, insidious: false}
+	standard        = atmosphereDetails{description: "Standard", base: 6, tainted: false, trace: false, veryThin: false, thin: false, standard: true, dense: false, exotic: false, corrosive: false, insidious: false}
 	standardTainted = atmosphereDetails{description: "Standard, tainted", base: 7, tainted: true, trace: false, veryThin: false, thin: false, standard: true, dense: false, exotic: false, corrosive: false, insidious: false}
-	dense = atmosphereDetails{description: "Dense", base: 8, tainted: false, trace: false, veryThin: false, thin: false, standard: false, dense: true, exotic: false, corrosive: false, insidious: false}
-	denseTainted = atmosphereDetails{description: "Dense, tainted", base: 9, tainted: true, trace: false, veryThin: false, thin: false, standard: false, dense: true, exotic: false, corrosive: false, insidious: false}
-	exotic = atmosphereDetails{description: "Exotic", base: 10, tainted: false, trace: false, veryThin: false, thin: false, standard: false, dense: false, exotic: true, corrosive: false, insidious: false}
-	corrosive = atmosphereDetails{description: "Corrosive", base: 11, tainted: false, trace: false, veryThin: false, thin: false, standard: false, dense: false, exotic: false, corrosive: true, insidious: false}
-	insidious = atmosphereDetails{description: "Insidious", base: 12, tainted: false, trace: false, veryThin: false, thin: false, standard: false, dense: false, exotic: false, corrosive: false, insidious: true}
+	dense           = atmosphereDetails{description: "Dense", base: 8, tainted: false, trace: false, veryThin: false, thin: false, standard: false, dense: true, exotic: false, corrosive: false, insidious: false}
+	denseTainted    = atmosphereDetails{description: "Dense, tainted", base: 9, tainted: true, trace: false, veryThin: false, thin: false, standard: false, dense: true, exotic: false, corrosive: false, insidious: false}
+	exotic          = atmosphereDetails{description: "Exotic", base: 10, tainted: false, trace: false, veryThin: false, thin: false, standard: false, dense: false, exotic: true, corrosive: false, insidious: false}
+	corrosive       = atmosphereDetails{description: "Corrosive", base: 11, tainted: false, trace: false, veryThin: false, thin: false, standard: false, dense: false, exotic: false, corrosive: true, insidious: false}
+	insidious       = atmosphereDetails{description: "Insidious", base: 12, tainted: false, trace: false, veryThin: false, thin: false, standard: false, dense: false, exotic: false, corrosive: false, insidious: true}
 
-
-	atmospheres = []atmosphereDetails {
+	atmospheres = []atmosphereDetails{
 		noAtmosphere, traceAtmosphere, veryThinTainted, veryThin, thinTainted, thin, standard, standardTainted, dense, denseTainted, exotic, corrosive, insidious, insidious, insidious, insidious, insidious,
 	}
 )
@@ -114,7 +115,7 @@ func worldFromStar(fromStarID int) (newWorld *world) {
 	techLevel, tl := getTechLevel(random1s, starPort, size, atmosphereBase, hydroBase, popBase, governmentBase)
 
 	header := fmt.Sprintf(hdrText, fromStarID, starPort, size, atmosphereDescription.description, size, hydro,
-		population, government, lawBase	, tl, techLevel)
+		population, government, lawBase, tl, techLevel)
 	newWorld = &world{
 		starID:                fromStarID,
 		starPort:              starPort,
@@ -203,9 +204,7 @@ func getAtmosphereFromID(fromAtmosphereBase int) (result atmosphereDetails) {
 	case 12, 13, 14, 15, 16:
 		return insidious
 	}
-
 }
-
 
 func getAtmosphere(rand *rand.Rand, size int) (result atmosphereDetails, base int) {
 	base = twoD6(rand) + size - 7
@@ -501,28 +500,10 @@ func putWorldHeader(layout *gi.Layout) {
 	workingWorld.SystemDetails.SetProp("line-height", 1.5)
 }
 
-func addJumpButtons() {
-	workingWorld.jumpButtons = make([]*gi.Button, 0)
-	workingWorld.jumps = make([]int, 0)
-
-	for id, nextJump := range jumpsByStar[workingWorld.starID] {
-		name := "jump-" + strconv.Itoa(id)
-		nextJumpButton := gi.AddNewButton(workingWorld.worldLayout, name)
-		nextJumpButton.SetText("System " + strconv.Itoa(id))
-		workingWorld.jumpButtons = append(workingWorld.jumpButtons, nextJumpButton)
-		if workingWorld.starID == nextJump.s1ID {
-			workingWorld.jumps = append(workingWorld.jumps, nextJump.s2ID)
-		} else {
-			workingWorld.jumps = append(workingWorld.jumps, nextJump.s1ID)
-		}
-	}
-
-}
-
 func getWorldHeader() string {
 	return workingWorld.SystemDetails.Text
 }
 
-func  setWorldHeader(header string) {
+func setWorldHeader(header string) {
 	workingWorld.SystemDetails.SetText(header)
 }

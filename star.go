@@ -78,10 +78,14 @@ type simpleLine struct {
 
 const (
 	intensityStep = 8
+	faster        = true
+	fastest       = false
 )
 
 var (
-	offsets = position{x: -2.5, y: -1.0, z: 0.0}
+	size       = position{x: 5, y: 2, z: 1}
+	sizeFloats = position{x: float32(size.x), y: float32(size.y), z: float32(size.z)}
+	offsets    = position{x: sizeFloats.x / -2.0, y: sizeFloats.y / -2.0, z: sizeFloats.z / -2.0}
 
 	intensity = []uint8{
 		0, 0, intensityStep, 2 * intensityStep, 3 * intensityStep, 4 * intensityStep, 2 * intensityStep,
@@ -221,7 +225,7 @@ var (
 
 func getStarDetails(classDetails classDetails, sector sector, random1m *rand.Rand) []*star {
 	stars := make([]*star, 0)
-	loopSize := int32(500 * (classDetails.odds - classDetails.fudge + 2*classDetails.fudge*random1m.Float32()))
+	loopSize := int32(1000 * (classDetails.odds - classDetails.fudge + 2*classDetails.fudge*random1m.Float32()))
 	for i := 0; i < int(loopSize); i++ {
 		nextStar := star{}
 		nextStar.id = len(stars)
@@ -306,8 +310,8 @@ func renderStars(sc *gi3d.Scene) {
 	if !rendered {
 		stars = make([]*star, 0)
 		id := 0
-		for x := uint32(0); x < 4; x++ {
-			for y := uint32(0); y < 2; y++ {
+		for x := uint32(0); x < 1; x++ {
+			for y := uint32(0); y < 1; y++ {
 				sector := sector{x: x, y: y, z: 0}
 				for _, star := range getSectorDetails(sector) {
 					star.id = id
@@ -330,100 +334,130 @@ func renderStars(sc *gi3d.Scene) {
 			for id, star := range stars {
 				for _, jump := range checkForJumps(stars, star, id) {
 					lines = append(lines, jump)
-					if jump.jumpInfo.distance < 3 {
+					if jump.jumpInfo.distance < 3.0 {
 						jumpsByStar[star.id] = append(jumpsByStar[star.id], jump.jumpInfo)
+						if star.id == jump.jumpInfo.s2ID {
+							jumpsByStar[jump.jumpInfo.s1ID] = append(jumpsByStar[jump.jumpInfo.s1ID], jump.jumpInfo)
+						} else {
+							jumpsByStar[jump.jumpInfo.s2ID] = append(jumpsByStar[jump.jumpInfo.s2ID], jump.jumpInfo)
+						}
 					}
 				}
 			}
 
-			rendered = true
-			highWater = -1
-			for lNumber := 0; lNumber < len(stars); lNumber++ {
-				tJumps := traceJumps(lNumber)
-				if len(tJumps) > highWater {
-					highWater = len(tJumps)
-					connectedStar = lNumber
-				}
-			}
-
-			traceJumps := traceJumps(connectedStar)
-			brighter := uint8(0)
-			thicker := float32(1.0)
-
-			popMax := 0
-			bigWorld := worldFromStar(stars[0].id)
-			bigStar := *stars[0]
-			techMax := 0
-			techWorld := worldFromStar(stars[0].id)
-			techStar := *stars[0]
-
-			for _, star := range stars {
-				world := worldFromStar(star.id)
-				if world.techLevelBase > techMax {
-					techMax = world.techLevelBase
-					techWorld = world
-					techStar = *star
-				}
-				if world.popBase > popMax {
-					popMax = world.popBase
-					bigWorld = world
-					bigStar = *star
-				}
-			}
-
-			if techMax > popMax {
-				techMax += 1
-			}
-			if bigWorld.popBase > popMax {
-				techMax += 1
-			}
-			if bigStar.pixels > 0 {
-				techMax += 1
-			}
-			if techWorld.popBase > popMax {
-				techMax += 1
-			}
-			if techStar.pixels > 0 {
-				techMax += 1
-			}
-			for id, lin := range lines {
-				brighter = 0
-				thicker = float32(1.0)
-				for _, eachJump := range traceJumps {
-					if lin.jumpInfo == eachJump {
-						brighter = eighth
-						thicker = float32(10.0)
+			if !fastest {
+				rendered = true
+				highWater = -1
+				for lNumber := 0; lNumber < len(stars); lNumber++ {
+					tJumps := traceJumps(lNumber)
+					if len(tJumps) > highWater {
+						highWater = len(tJumps)
+						connectedStar = lNumber
 					}
 				}
 
-				lin.jumpInfo.color.R += brighter
-				lin.jumpInfo.color.G += brighter
-				lin.jumpInfo.color.B += brighter
-				thickness := float32(0.0002) * thicker
+				traceJumps := traceJumps(connectedStar)
+				brighter := uint8(0)
+				thicker := float32(1.0)
 
-				if lin.jumpInfo.color.A < math.MaxUint8-55 {
-					thickness = 0.00010 * thicker
-				} else if lin.jumpInfo.color.A < math.MaxUint8-47 {
-					thickness = 0.00012 * thicker
-				} else if lin.jumpInfo.color.A < math.MaxUint8-39 {
-					thickness = 0.00015 * thicker
+				if !faster {
+					popMax := 0
+					bigWorld := worldFromStar(stars[0].id)
+					bigStar := *stars[0]
+					techMax := 0
+					techWorld := worldFromStar(stars[0].id)
+					techStar := *stars[0]
+
+					for _, star := range stars {
+						world := worldFromStar(star.id)
+						if world.techLevelBase > techMax {
+							techMax = world.techLevelBase
+							techWorld = world
+							techStar = *star
+						}
+						if world.popBase > popMax {
+							popMax = world.popBase
+							bigWorld = world
+							bigStar = *star
+						}
+					}
+
+					if techMax > popMax {
+						techMax += 1
+					}
+					if bigWorld.popBase > popMax {
+						techMax += 1
+					}
+					if bigStar.pixels > 0 {
+						techMax += 1
+					}
+					if techWorld.popBase > popMax {
+						techMax += 1
+					}
+					if techStar.pixels > 0 {
+						techMax += 1
+					}
 				}
-				jumpLines := gi3d.AddNewLines(sc, "Lines-"+strconv.Itoa(lin.jumpInfo.s1ID)+"-"+strconv.Itoa(lin.jumpInfo.s2ID),
-					[]mat32.Vec3{
-						{X: lin.from.x + offsets.x, Y: lin.from.y + offsets.y, Z: lin.from.z + offsets.z},
-						{X: lin.to.x + offsets.x, Y: lin.to.y + offsets.y, Z: lin.to.z + offsets.z},
-					},
-					mat32.Vec2{X: thickness, Y: thickness},
-					gi3d.OpenLines,
-				)
-				solidLine := gi3d.AddNewSolid(sc, sc, "Lines-"+strconv.Itoa(id), jumpLines.Name())
-				// solidLine.Pose.Pos.Set(lin.from.x - .5, lin.from.y - .5, lin.from.z + 8)
-				// lns.Mat.Color.SetUInt8(255, 255, 0, 128)
-				solidLine.Mat.Color = lin.jumpInfo.color
+				for id, lin := range lines {
+					brighter = 0
+					thicker = float32(1.0)
+					for _, eachJump := range traceJumps {
+						if lin.jumpInfo == eachJump {
+							brighter = eighth
+							thicker = float32(10.0)
+							break
+						}
+					}
+					lin.jumpInfo.color.R += brighter
+					lin.jumpInfo.color.G += brighter
+					lin.jumpInfo.color.B += brighter
+					thickness := float32(0.0002) * thicker
+
+					if lin.jumpInfo.color.A < math.MaxUint8-55 {
+						thickness = 0.00010 * thicker
+					} else if lin.jumpInfo.color.A < math.MaxUint8-47 {
+						thickness = 0.00012 * thicker
+					} else if lin.jumpInfo.color.A < math.MaxUint8-39 {
+						thickness = 0.00015 * thicker
+					}
+					jumpLines := gi3d.AddNewLines(sc, "Lines-"+strconv.Itoa(lin.jumpInfo.s1ID)+"-"+strconv.Itoa(lin.jumpInfo.s2ID),
+						[]mat32.Vec3{
+							{X: lin.from.x + offsets.x, Y: lin.from.y + offsets.y, Z: lin.from.z + offsets.z},
+							{X: lin.to.x + offsets.x, Y: lin.to.y + offsets.y, Z: lin.to.z + offsets.z},
+						},
+						mat32.Vec2{X: thickness, Y: thickness},
+						gi3d.OpenLines,
+					)
+					solidLine := gi3d.AddNewSolid(sc, sc, "Lines-"+strconv.Itoa(id), jumpLines.Name())
+					// solidLine.Pose.Pos.Set(lin.from.x - .5, lin.from.y - .5, lin.from.z + 8)
+					// lns.Mat.Color.SetUInt8(255, 255, 0, 128)
+					solidLine.Mat.Color = lin.jumpInfo.color
+				}
+			} else {
+				// fastest case
+				for id, lin := range lines {
+					thickness := float32(0.00010)
+					if lin.jumpInfo.color.A < math.MaxUint8-47 {
+						thickness = 0.00012
+					} else if lin.jumpInfo.color.A < math.MaxUint8-39 {
+						thickness = 0.00015
+					}
+					jumpLines := gi3d.AddNewLines(sc, "Lines-"+strconv.Itoa(lin.jumpInfo.s1ID)+"-"+strconv.Itoa(lin.jumpInfo.s2ID),
+						[]mat32.Vec3{
+							{X: lin.from.x + offsets.x, Y: lin.from.y + offsets.y, Z: lin.from.z + offsets.z},
+							{X: lin.to.x + offsets.x, Y: lin.to.y + offsets.y, Z: lin.to.z + offsets.z},
+						},
+						mat32.Vec2{X: thickness, Y: thickness},
+						gi3d.OpenLines,
+					)
+					solidLine := gi3d.AddNewSolid(sc, sc, "Lines-"+strconv.Itoa(id), jumpLines.Name())
+					// solidLine.Pose.Pos.Set(lin.from.x - .5, lin.from.y - .5, lin.from.z + 8)
+					// lns.Mat.Color.SetUInt8(255, 255, 0, 128)
+					solidLine.Mat.Color = lin.jumpInfo.color
+				}
 			}
 		}
 	}
-	print("Done")
 }
 
 func checkForJumps(stars []*star, star *star, id int) (result []*simpleLine) {
@@ -434,12 +468,8 @@ func checkForJumps(stars []*star, star *star, id int) (result []*simpleLine) {
 		}
 		jumpColor := checkFor1jump(star, innerStar)
 		if jumpColor.color.A > 0 {
-			newJump := &simpleLine{
-				from:     position{x: star.x, y: star.y, z: star.z},
-				to:       position{x: innerStar.x, y: innerStar.y, z: innerStar.z},
-				jumpInfo: jumpColor,
-			}
-			result = append(result, newJump)
+			// symmetric, so no copies
+			result = addIfNew(result, jumpColor)
 		}
 	}
 	closest := []*simpleLine{&noLine, &noLine}
@@ -582,3 +612,28 @@ func showBigStar(star star, sc *gi3d.Scene) {
 	starSphere.Mat.Color.SetUInt8(star.brightColor.R, star.brightColor.G, star.brightColor.B, star.brightColor.A)
 }
 
+func addIfNew(soFar []*simpleLine, jump *jump) (result []*simpleLine) {
+	result = soFar
+	if jump.s1ID >= jump.s2ID {
+		return
+	}
+	already := false
+	for _, line := range result {
+		if (line.jumpInfo.s1ID == jump.s1ID &&
+			line.jumpInfo.s2ID == jump.s2ID) ||
+			(line.jumpInfo.s1ID == jump.s2ID &&
+				line.jumpInfo.s2ID == jump.s1ID) {
+			already = true
+			break
+		}
+	}
+	if !already {
+		nextLine := &simpleLine{
+			from:     position{x: stars[jump.s1ID].x, y: stars[jump.s1ID].y, z: stars[jump.s1ID].z},
+			to:       position{x: stars[jump.s2ID].x, y: stars[jump.s2ID].y, z: stars[jump.s2ID].z},
+			jumpInfo: jump,
+		}
+		result = append(result, nextLine)
+	}
+	return
+}
