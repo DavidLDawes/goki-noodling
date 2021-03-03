@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"github.com/goki/ki/kit"
+	"math"
 
 	"github.com/goki/gi/gi"
 	"github.com/goki/gi/gi3d"
@@ -9,6 +11,8 @@ import (
 	"github.com/goki/ki/ki"
 	"github.com/goki/mat32"
 )
+
+type selectFunc func() ([]*star)
 
 type systemSelector struct {
 	currentSystem int
@@ -19,6 +23,8 @@ type systemSelector struct {
 	sceneView     *gi3d.SceneView
 	win           *gi.Window
 	star          *star
+	targets       []int
+	choose        selectFunc
 }
 
 var selection = systemSelector{
@@ -29,6 +35,8 @@ var selection = systemSelector{
 	viewPort:      &gi.Viewport2D{},
 	sceneView:     &gi3d.SceneView{},
 	star:          &star{},
+	targets:       []int{},
+	choose:        allStars,
 }
 
 const hdrText = `<p>Star %d </p>
@@ -43,7 +51,9 @@ const hdrText = `<p>Star %d </p>
     <p><b>Tech Level</b> %d</p>
     <p><b>Tech Description</b> %s</p>`
 
-func (s *systemSelector) updateWorldLableText(systemID int) (header string) {
+var KiT_SceneView = kit.Types.AddType(&gi3d.SceneView{}, nil)
+
+func (s *systemSelector) updateWorldLableTextAndCamera(systemID int) (header string) {
 	removeSel := s.toolBar.ChildByName("selmode", 0)
 	if removeSel != nil {
 		s.toolBar.DeleteChild(removeSel, true)
@@ -52,26 +62,23 @@ func (s *systemSelector) updateWorldLableText(systemID int) (header string) {
 		s.comboBox = gi.AddNewComboBox(s.toolBar, "selJump")
 	}
 	selections := make([]string, 0)
-	targets := make([]int, 0)
+	s.targets = make([]int, 0)
 	for id, jump := range jumpsByStar[systemID] {
-		var nextStar int
+		nextStar := -1
 		if systemID == jump.s1ID {
 			nextStar = jump.s2ID
 		} else {
 			nextStar = jump.s1ID
 		}
-		selections = append(selections, fmt.Sprintf("Jump #%d to star %d", id+1, nextStar))
-		targets = append(targets, nextStar)
+		if nextStar != -1 {
+			selections = append(selections, fmt.Sprintf("Jump #%d to star %d", id+1, nextStar))
+			s.targets = append(s.targets, nextStar)
+		}
 	}
 	s.comboBox.ItemsFromStringList(selections, true, len(selections))
 
 	s.comboBox.SetCurIndex(int(s.sceneView.Scene().SelMode))
-	s.comboBox.ComboSig.ConnectOnly(s.sceneView.This(), func(recv, send ki.Ki, sig int64, data interface{}) {
-		cbb := send.(*gi.ComboBox)
-		s.currentSystem = targets[cbb.CurIndex]
-		s.updateWorldLableText(targets[cbb.CurIndex])
-		s.scene.UpdateSig()
-	})
+	s.comboBox.ComboSig.ConnectOnly(s.sceneView.This(), s.handler)
 
 	s.scene.SetActiveStateUpdt(true)
 
@@ -81,17 +88,47 @@ func (s *systemSelector) updateWorldLableText(systemID int) (header string) {
 	workingWorld.worldHeader = header
 	workingWorld.SystemDetails.CurBgColor = gist.Color{R: 0, G: 0, B: 0, A: 255}
 	workingWorld.SystemDetails.SetText(header)
-	s.scene.Camera.Pose.Pos.Set(float32(stars[systemID].x), float32(stars[systemID].y), float32(stars[systemID].z+offsets.z+.1))
+	s.scene.Camera.Pose.Pos.Set(float32(stars[systemID].x) + offsets.x, float32(stars[systemID].y) + offsets.y, float32(stars[systemID].z+offsets.z) + 0.1)
 	s.scene.Camera.LookAt(mat32.Vec3{
 		X: float32(stars[systemID].x) + offsets.x,
 		Y: float32(stars[systemID].y) + offsets.y,
 		Z: float32(stars[systemID].z) + offsets.z,
 	}, mat32.Vec3{
 		X: 0,
-		Y: 1,
+		Y: .1,
 		Z: 0,
 	})
-	s.scene.SetActiveStateUpdt(false)
 
+	s.scene.SetActiveStateUpdt(false)
+	for id, l := range lines {
+		thicker := float32(1.0)
+		if l.jumpInfo.s1ID == systemID ||
+			l.jumpInfo.s2ID == systemID {
+			l.jumpInfo.activeColor.R = l.jumpInfo.color.R + eighth
+			l.jumpInfo.color.G = l.jumpInfo.color.G + eighth
+			l.jumpInfo.color.B = l.jumpInfo.color.B + eighth
+			thicker = float32(10.0)
+		}
+		thickness := float32(0.00005)
+		if l.jumpInfo.color.A < math.MaxUint8-55 {
+			thickness = 0.00010 * thicker
+		} else if l.jumpInfo.color.A < math.MaxUint8-47 {
+			thickness = 0.00012 * thicker
+		} else if l.jumpInfo.color.A < math.MaxUint8-39 {
+			thickness = 0.00015 * thicker
+		}
+		lines[id].lines.Width = mat32.Vec2{X: thickness, Y: thickness}
+	}
 	return
+}
+
+func (s *systemSelector) handler(recv, send ki.Ki, sig int64, data interface{}) {
+	svv := recv.Embed(KiT_SceneView).(*gi3d.SceneView)
+	cbb := send.(*gi.ComboBox)
+	//scc := svv.Scene()
+	if cbb.CurIndex < len(s.targets) {
+		s.currentSystem = s.targets[cbb.CurIndex]
+		s.updateWorldLableTextAndCamera(s.targets[cbb.CurIndex])
+		svv.UpdateSig()
+	}
 }

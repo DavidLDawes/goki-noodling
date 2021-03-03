@@ -507,3 +507,246 @@ func getWorldHeader() string {
 func setWorldHeader(header string) {
 	workingWorld.SystemDetails.SetText(header)
 }
+
+
+
+func maxTech() (results []*star) {
+	techMax := -99
+	empty :=  make([]*star, 0)
+	results = empty
+	for _, star := range stars {
+		world := worldFromStar(star.id)
+		if world.techLevelBase > techMax {
+			techMax = world.techLevelBase
+			results = append(empty, star)
+		} else if world.techLevelBase == techMax {
+			results = append(results, star)
+		}
+	}
+
+	return
+}
+
+
+func starsByTech(tech int) (results []*star) {
+	results = make([]*star, 0)
+	for _, star := range stars {
+		world := worldFromStar(star.id)
+		if world.techLevelBase== tech {
+			results = append(results, star)
+		}
+	}
+
+	return
+}
+
+func starsTechAtLeast(tech int) (results []*star) {
+	results = make([]*star, 0)
+	for _, star := range stars {
+		world := worldFromStar(star.id)
+		if world.techLevelBase >= tech {
+			results = append(results, star)
+		}
+	}
+
+	return
+}
+
+func starsTechAtMost(tech int) (results []*star) {
+	results = make([]*star, 0)
+	for _, star := range stars {
+		world := worldFromStar(star.id)
+		if world.techLevelBase <= tech {
+			results = append(results, star)
+		}
+	}
+
+	return
+}
+
+func maxPop() (results []*star) {
+	popMax := -99
+	empty :=  make([]*star, 0)
+	results = empty
+	for _, star := range stars {
+		world := worldFromStar(star.id)
+		if world.popBase > popMax {
+			popMax = world.popBase
+			results = append(empty, star)
+		} else if world.popBase == popMax {
+			results = append(results, star)
+		}
+	}
+
+	return
+}
+
+func starsByPop(pop int) (results []*star) {
+	results = make([]*star, 0)
+	for _, star := range stars {
+		world := worldFromStar(star.id)
+		if world.popBase == pop {
+			results = append(results, star)
+		}
+	}
+
+	return
+}
+
+func starsPopAtLeast(pop int) (results []*star) {
+	results = make([]*star, 0)
+	for _, star := range stars {
+		world := worldFromStar(star.id)
+		if world.popBase >= pop {
+			results = append(results, star)
+		}
+	}
+
+	return
+}
+
+func starsPopAtMost(pop int) (results []*star) {
+	results = make([]*star, 0)
+	for _, star := range stars {
+		world := worldFromStar(star.id)
+		if world.popBase <= pop {
+			results = append(results, star)
+		}
+	}
+
+	return
+}
+
+func allStars() (results []*star) {
+	results = stars
+
+	return
+}
+
+func maxSize() (results []*star) {
+	sizeMax := -99
+	empty :=  make([]*star, 0)
+	results = empty
+	for _, star := range stars {
+		world := worldFromStar(star.id)
+		if world.popBase > sizeMax {
+			sizeMax = world.popBase
+			results = append(empty, star)
+		} else if world.popBase == sizeMax {
+			results = append(results, star)
+		}
+	}
+
+	return
+}
+
+func minSize() (results []*star) {
+	sizeMin := 99
+	empty :=  make([]*star, 0)
+	results = empty
+	for _, star := range stars {
+		world := worldFromStar(star.id)
+		if world.popBase < sizeMin {
+			sizeMin = world.popBase
+			results = append(empty, star)
+		} else if world.popBase == sizeMin {
+			results = append(results, star)
+		}
+	}
+
+	return
+}
+
+func starsBySize(size int) (results []*star) {
+	results = make([]*star, 0)
+	for _, star := range stars {
+		world := worldFromStar(star.id)
+		if world.sizeBase == size {
+			results = append(results, star)
+		}
+	}
+
+	return
+}
+
+func starsSizeAtMost(size int) (results []*star) {
+	results = make([]*star, 0)
+	for _, star := range stars {
+		world := worldFromStar(star.id)
+		if world.sizeBase <= size {
+			results = append(results, star)
+		}
+	}
+
+	return
+}
+
+func starsSizeAtLeast(size int) (results []*star) {
+	results = make([]*star, 0)
+	for _, star := range stars {
+		world := worldFromStar(star.id)
+		if world.sizeBase >= size {
+			results = append(results, star)
+		}
+	}
+
+	return
+}
+
+func starHydroMax() (results []*star) {
+	hydroMax := -100
+	empty :=  make([]*star, 0)
+	results = empty
+	for _, star := range stars {
+		world := worldFromStar(star.id)
+		if world.hydroBase > hydroMax {
+			hydroMax = world.hydroBase
+			results = append(empty, star)
+		} else if world.hydroBase == hydroMax {
+			results = append(results, star)
+		}
+	}
+
+	return
+}
+
+func starHydroMin() (results []*star) {
+	hydroMin := 300
+	empty :=  make([]*star, 0)
+	results = empty
+	for _, star := range stars {
+		world := worldFromStar(star.id)
+		if world.hydroBase < hydroMin {
+			hydroMin = world.hydroBase
+			results = append(empty, star)
+		} else if world.hydroBase == hydroMin {
+			results = append(results, star)
+		}
+	}
+
+	return
+}
+
+func starHydroAtLeast(hydroMin int) (results []*star) {
+	results = make([]*star, 0)
+	for _, star := range stars {
+		world := worldFromStar(star.id)
+		if world.hydroBase >= hydroMin {
+			results = append(results, star)
+		}
+	}
+
+	return
+}
+
+func starHydroAtMost(hydroMax int) (results []*star) {
+	results = make([]*star, 0)
+	for _, star := range stars {
+		world := worldFromStar(star.id)
+		if world.hydroBase <= hydroMax {
+			results = append(results, star)
+		}
+	}
+
+	return
+}

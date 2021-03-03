@@ -63,17 +63,19 @@ type position struct {
 }
 
 type jump struct {
-	color    gist.Color
-	parsecs  int
-	distance float32
-	s1ID     int
-	s2ID     int
+	color       gist.Color
+	activeColor gist.Color
+	parsecs     int
+	distance    float32
+	s1ID        int
+	s2ID        int
 }
 
 type simpleLine struct {
 	from     position
 	to       position
 	jumpInfo *jump
+	lines    *gi3d.Lines
 }
 
 const (
@@ -83,7 +85,7 @@ const (
 )
 
 var (
-	size       = position{x: 5, y: 2, z: 1}
+	size       = position{x: 2, y: 2, z: 1}
 	sizeFloats = position{x: float32(size.x), y: float32(size.y), z: float32(size.z)}
 	offsets    = position{x: sizeFloats.x / -2.0, y: sizeFloats.y / -2.0, z: sizeFloats.z / -2.0}
 
@@ -102,8 +104,9 @@ var (
 	tween  = uint8(sevenEighths)
 	med    = uint8(threeQuarters)
 	dim    = uint8(half)
-	noJump = jump{gist.Color(color.RGBA{R: 0, G: 0, B: 0, A: 0}), 500000000.0, 500000000.0, -1, -1}
-	noLine = simpleLine{from: position{x: 0, y: 0, z: 0}, to: position{x: 0, y: 0, z: 0}, jumpInfo: &noJump}
+	noJump = jump{color: gist.Color(color.RGBA{R: 0, G: 0, B: 0, A: 0}), activeColor: gist.Color(color.RGBA{R: 0, G: 0, B: 0, A: 0}),
+		parsecs: 0, distance: 0.0, s1ID: -1, s2ID: -1}
+	noLine = simpleLine{from: position{x: 0, y: 0, z: 0}, to: position{x: 0, y: 0, z: 0}, jumpInfo: &noJump, lines: &gi3d.Lines{}}
 
 	jumpsByStar = make(map[int][]*jump)
 
@@ -225,7 +228,7 @@ var (
 
 func getStarDetails(classDetails classDetails, sector sector, random1m *rand.Rand) []*star {
 	stars := make([]*star, 0)
-	loopSize := int32(1000 * (classDetails.odds - classDetails.fudge + 2*classDetails.fudge*random1m.Float32()))
+	loopSize := int32(1440 * (classDetails.odds - classDetails.fudge + 2*classDetails.fudge*random1m.Float32()))
 	for i := 0; i < int(loopSize); i++ {
 		nextStar := star{}
 		nextStar.id = len(stars)
@@ -293,14 +296,13 @@ func distance(s1 *star, s2 *star) float32 {
 	return math32.Sqrt((s1.x-s2.x)*(s1.x-s2.x) + (s1.y-s2.y)*(s1.y-s2.y) + (s1.z-s2.z)*(s1.z-s2.z))
 }
 
-var stars []*star
-
 var (
+	stars []*star
+	lines []*simpleLine
+
 	sName       = "sphere"
 	sphereModel *gi3d.Sphere
-)
 
-var (
 	rendered      = false
 	connectedStar int
 	highWater     int
@@ -310,8 +312,8 @@ func renderStars(sc *gi3d.Scene) {
 	if !rendered {
 		stars = make([]*star, 0)
 		id := 0
-		for x := uint32(0); x < 1; x++ {
-			for y := uint32(0); y < 1; y++ {
+		for x := uint32(0); x < 2; x++ {
+			for y := uint32(0); y < 2; y++ {
 				sector := sector{x: x, y: y, z: 0}
 				for _, star := range getSectorDetails(sector) {
 					star.id = id
@@ -324,7 +326,7 @@ func renderStars(sc *gi3d.Scene) {
 			sphereModel = &gi3d.Sphere{}
 			sphereModel.Reset()
 			sphereModel = gi3d.AddNewSphere(sc, sName, 0.002, 24)
-			lines := make([]*simpleLine, 0)
+			lines = make([]*simpleLine, 0)
 			sName = "sphere"
 			for _, star := range stars {
 				starSphere := gi3d.AddNewSolid(sc, sc, sName, sphereModel.Name())
@@ -355,10 +357,6 @@ func renderStars(sc *gi3d.Scene) {
 						connectedStar = lNumber
 					}
 				}
-
-				traceJumps := traceJumps(connectedStar)
-				brighter := uint8(0)
-				thicker := float32(1.0)
 
 				if !faster {
 					popMax := 0
@@ -398,51 +396,17 @@ func renderStars(sc *gi3d.Scene) {
 						techMax += 1
 					}
 				}
-				for id, lin := range lines {
-					brighter = 0
-					thicker = float32(1.0)
-					for _, eachJump := range traceJumps {
-						if lin.jumpInfo == eachJump {
-							brighter = eighth
-							thicker = float32(10.0)
-							break
-						}
-					}
-					lin.jumpInfo.color.R += brighter
-					lin.jumpInfo.color.G += brighter
-					lin.jumpInfo.color.B += brighter
-					thickness := float32(0.0002) * thicker
-
-					if lin.jumpInfo.color.A < math.MaxUint8-55 {
-						thickness = 0.00010 * thicker
-					} else if lin.jumpInfo.color.A < math.MaxUint8-47 {
-						thickness = 0.00012 * thicker
-					} else if lin.jumpInfo.color.A < math.MaxUint8-39 {
-						thickness = 0.00015 * thicker
-					}
-					jumpLines := gi3d.AddNewLines(sc, "Lines-"+strconv.Itoa(lin.jumpInfo.s1ID)+"-"+strconv.Itoa(lin.jumpInfo.s2ID),
-						[]mat32.Vec3{
-							{X: lin.from.x + offsets.x, Y: lin.from.y + offsets.y, Z: lin.from.z + offsets.z},
-							{X: lin.to.x + offsets.x, Y: lin.to.y + offsets.y, Z: lin.to.z + offsets.z},
-						},
-						mat32.Vec2{X: thickness, Y: thickness},
-						gi3d.OpenLines,
-					)
-					solidLine := gi3d.AddNewSolid(sc, sc, "Lines-"+strconv.Itoa(id), jumpLines.Name())
-					// solidLine.Pose.Pos.Set(lin.from.x - .5, lin.from.y - .5, lin.from.z + 8)
-					// lns.Mat.Color.SetUInt8(255, 255, 0, 128)
-					solidLine.Mat.Color = lin.jumpInfo.color
+			}
+			// fastest case
+			for id, lin := range lines {
+				thickness := float32(0.00010)
+				if lin.jumpInfo.color.A < math.MaxUint8-47 {
+					thickness = 0.00012
+				} else if lin.jumpInfo.color.A < math.MaxUint8-39 {
+					thickness = 0.00015
 				}
-			} else {
-				// fastest case
-				for id, lin := range lines {
-					thickness := float32(0.00010)
-					if lin.jumpInfo.color.A < math.MaxUint8-47 {
-						thickness = 0.00012
-					} else if lin.jumpInfo.color.A < math.MaxUint8-39 {
-						thickness = 0.00015
-					}
-					jumpLines := gi3d.AddNewLines(sc, "Lines-"+strconv.Itoa(lin.jumpInfo.s1ID)+"-"+strconv.Itoa(lin.jumpInfo.s2ID),
+				if lin.jumpInfo.s1ID != lin.jumpInfo.s2ID {
+					lin.lines = gi3d.AddNewLines(sc, "Lines-"+strconv.Itoa(lin.jumpInfo.s1ID)+"-"+strconv.Itoa(lin.jumpInfo.s2ID),
 						[]mat32.Vec3{
 							{X: lin.from.x + offsets.x, Y: lin.from.y + offsets.y, Z: lin.from.z + offsets.z},
 							{X: lin.to.x + offsets.x, Y: lin.to.y + offsets.y, Z: lin.to.z + offsets.z},
@@ -450,7 +414,7 @@ func renderStars(sc *gi3d.Scene) {
 						mat32.Vec2{X: thickness, Y: thickness},
 						gi3d.OpenLines,
 					)
-					solidLine := gi3d.AddNewSolid(sc, sc, "Lines-"+strconv.Itoa(id), jumpLines.Name())
+					solidLine := gi3d.AddNewSolid(sc, sc, "Lines-"+strconv.Itoa(id), lin.lines.Name())
 					// solidLine.Pose.Pos.Set(lin.from.x - .5, lin.from.y - .5, lin.from.z + 8)
 					// lns.Mat.Color.SetUInt8(255, 255, 0, 128)
 					solidLine.Mat.Color = lin.jumpInfo.color
@@ -498,7 +462,7 @@ func checkFor1jump(s1 *star, s2 *star) (result *jump) {
 	delta := int(jumpLength)
 	if delta < len(jumpColors) {
 		if s1.id != s2.id {
-			result = &jump{jumpColors[delta], delta, jumpLength, s1.id, s2.id}
+			result = &jump{jumpColors[delta], jumpColors[delta], delta, jumpLength, s1.id, s2.id}
 		} else {
 			result = &noJump
 		}

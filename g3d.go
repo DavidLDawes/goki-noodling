@@ -49,7 +49,7 @@ func mainRun() {
 	selection.win = win
 	selection.scene = sc
 	selection.viewPort = vp
-	selection.updateWorldLableText(0)
+	selection.updateWorldLableTextAndCamera(0)
 	appName := gi.AppName()
 	mainMenu := win.MainMenu
 	mainMenu.ConfigMenus([]string{appName, "File", "Edit", "Window"})
@@ -124,17 +124,17 @@ func addScene(info ki.Ki) (result *gi3d.Scene) {
 		func(recv, send ki.Ki, sig int64, data interface{}) {
 			selection.currentSystem--
 			if selection.currentSystem < 0 {
-				selection.currentSystem = len(stars) - 1
+				selection.currentSystem = len(selection.choose()) - 1
 			}
-			selection.updateWorldLableText(selection.currentSystem)
+			selection.updateWorldLableTextAndCamera(selection.currentSystem)
 		})
 	tbar.AddAction(gi.ActOpts{Icon: "wedge-right"}, sceneView.This(),
 		func(recv, send ki.Ki, sig int64, data interface{}) {
 			selection.currentSystem++
-			if selection.currentSystem > len(stars)-1 {
+			if selection.currentSystem > len(selection.choose())-1 {
 				selection.currentSystem = 0
 			}
-			selection.updateWorldLableText(selection.currentSystem)
+			selection.updateWorldLableTextAndCamera(selection.currentSystem)
 		})
 	result = sceneView.Scene()
 	result.BgColor.SetUInt8(0, 0, 0, 255)
