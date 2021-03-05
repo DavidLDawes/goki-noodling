@@ -104,36 +104,55 @@ func addScene(info ki.Ki) (result *gi3d.Scene) {
 	selection.sceneView = sceneView
 	sceneView.SetStretchMax()
 	sceneView.Config()
-	tbar := sceneView.Toolbar()
-	selection.toolBar = tbar
+	selection.toolBar = sceneView.Toolbar()
 
-	removeSel := tbar.ChildByName("selmode", 0)
+	removeSel := selection.toolBar.ChildByName("selmode", 0)
 	if removeSel != nil {
-		tbar.DeleteChild(removeSel, false)
+		selection.toolBar.DeleteChild(removeSel, true)
 	}
-	removeEdit := tbar.ChildByName("Edit", 0)
+	removeEdit := selection.toolBar.ChildByName("Edit", 0)
 	if removeEdit != nil {
-		tbar.DeleteChild(removeEdit, false)
+		selection.toolBar.DeleteChild(removeEdit, true)
 	}
-	removeEdit = tbar.ChildByName("Edit Scene", 0)
+	removeEdit = selection.toolBar.ChildByName("Edit Scene", 0)
 	if removeEdit != nil {
-		tbar.DeleteChild(removeEdit, false)
+		selection.toolBar.DeleteChild(removeEdit, true)
 	}
-	gi.AddNewLabel(tbar, "select", "Select:")
-	tbar.AddAction(gi.ActOpts{Icon: "wedge-left"}, sceneView.This(),
+	gi.AddNewLabel(selection.toolBar, "select", "Select:")
+	selection.toolBar.AddAction(gi.ActOpts{Icon: "wedge-left"}, sceneView.This(),
 		func(recv, send ki.Ki, sig int64, data interface{}) {
-			selection.currentSystem--
-			if selection.currentSystem < 0 {
-				selection.currentSystem = len(selection.choose()) - 1
+			match := -1
+			for sID, next := range selection.choose() {
+				if selection.currentSystem == next.id {
+					match = sID
+					break
+				}
 			}
+			if match > -1 {
+				match--
+				if match < 0 {
+					match = len(selection.choose()) - 1
+				}
+			}
+			selection.currentSystem = selection.choose()[match].id
 			selection.updateWorldLableTextAndCamera(selection.currentSystem)
 		})
-	tbar.AddAction(gi.ActOpts{Icon: "wedge-right"}, sceneView.This(),
+	selection.toolBar.AddAction(gi.ActOpts{Icon: "wedge-right"}, sceneView.This(),
 		func(recv, send ki.Ki, sig int64, data interface{}) {
-			selection.currentSystem++
-			if selection.currentSystem > len(selection.choose())-1 {
-				selection.currentSystem = 0
+			match := -1
+			for sID, next := range selection.choose() {
+				if selection.currentSystem == next.id {
+					match = sID
+					break
+				}
 			}
+			if match > -1 {
+				match++
+				if match >= len(selection.choose()) {
+					match = 0
+				}
+			}
+			selection.currentSystem = selection.choose()[match].id
 			selection.updateWorldLableTextAndCamera(selection.currentSystem)
 		})
 	result = sceneView.Scene()

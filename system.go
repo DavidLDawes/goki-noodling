@@ -16,27 +16,29 @@ type selectFunc func() ([]*star)
 
 type systemSelector struct {
 	currentSystem int
-	scene         *gi3d.Scene
-	toolBar       *gi.ToolBar
-	comboBox      *gi.ComboBox
-	viewPort      *gi.Viewport2D
-	sceneView     *gi3d.SceneView
-	win           *gi.Window
-	star          *star
-	targets       []int
-	choose        selectFunc
+	scene          *gi3d.Scene
+	toolBar        *gi.ToolBar
+	jumpComboBox   *gi.ComboBox
+	filterComboBox *gi.ComboBox
+	viewPort       *gi.Viewport2D
+	sceneView      *gi3d.SceneView
+	win            *gi.Window
+	star           *star
+	targets        []int
+	choose         selectFunc
 }
 
 var selection = systemSelector{
 	currentSystem: 0,
-	scene:         &gi3d.Scene{},
-	toolBar:       &gi.ToolBar{},
-	comboBox:      &gi.ComboBox{},
-	viewPort:      &gi.Viewport2D{},
-	sceneView:     &gi3d.SceneView{},
-	star:          &star{},
-	targets:       []int{},
-	choose:        allStars,
+	scene:          &gi3d.Scene{},
+	toolBar:        &gi.ToolBar{},
+	jumpComboBox:   &gi.ComboBox{},
+	filterComboBox: &gi.ComboBox{},
+	viewPort:       &gi.Viewport2D{},
+	sceneView:      &gi3d.SceneView{},
+	star:           &star{},
+	targets:        []int{},
+	choose:         allStars,
 }
 
 const hdrText = `<p>Star %d </p>
@@ -53,15 +55,43 @@ const hdrText = `<p>Star %d </p>
 
 var KiT_SceneView = kit.Types.AddType(&gi3d.SceneView{}, nil)
 
-func (s *systemSelector) updateWorldLableTextAndCamera(systemID int) (header string) {
-	removeSel := s.toolBar.ChildByName("selmode", 0)
-	if removeSel != nil {
+var (
+	filter = map[string] selectFunc{
+		"All":             allStars,
+		"High Tech":       maxTech,
+		"Dry Worlds":      starHydroMin,
+		"Water Worlds":    starHydroMax,
+		"Largest Worlds":  maxSize,
+		"No Worlds":       minSize,
+		"Populous Worlds": maxPop,
+		"EMPTY Worlds":    minPop,
+	}
+)
+
+func (s *systemSelector) updateWorldLableTextAndCamera(systemID int) (header string){
+		removeSel := s.toolBar.ChildByName("selmode", 0)
+		if removeSel != nil{
 		s.toolBar.DeleteChild(removeSel, true)
 	}
-	if s.comboBox == nil || s.comboBox.Name() != "selJump" {
-		s.comboBox = gi.AddNewComboBox(s.toolBar, "selJump")
+
+	if s.filterComboBox == nil || s.filterComboBox.Name() != "selFilter"{
+		s.filterComboBox = gi.AddNewComboBox(s.toolBar, "selFilter")
 	}
 	selections := make([]string, 0)
+	s.targets = make([]int, 0)
+	for key, _ := range filter {
+		selections = append(selections, key)
+	}
+
+	s.filterComboBox.ItemsFromStringList(selections, true, len(selections))
+
+	s.filterComboBox.SetCurIndex(int(s.sceneView.Scene().SelMode))
+	s.filterComboBox.ComboSig.ConnectOnly(s.sceneView.This(), s.filterHandler)
+
+	if s.jumpComboBox == nil || s.jumpComboBox.Name() != "selJump" {
+	s.jumpComboBox = gi.AddNewComboBox(s.toolBar, "selJump")
+	}
+	selections = make([]string, 0)
 	s.targets = make([]int, 0)
 	for id, jump := range jumpsByStar[systemID] {
 		nextStar := -1
@@ -75,10 +105,10 @@ func (s *systemSelector) updateWorldLableTextAndCamera(systemID int) (header str
 			s.targets = append(s.targets, nextStar)
 		}
 	}
-	s.comboBox.ItemsFromStringList(selections, true, len(selections))
+	s.jumpComboBox.ItemsFromStringList(selections, true, len(selections))
 
-	s.comboBox.SetCurIndex(int(s.sceneView.Scene().SelMode))
-	s.comboBox.ComboSig.ConnectOnly(s.sceneView.This(), s.handler)
+	s.jumpComboBox.SetCurIndex(int(s.sceneView.Scene().SelMode))
+	s.jumpComboBox.ComboSig.ConnectOnly(s.sceneView.This(), s.handler)
 
 	s.scene.SetActiveStateUpdt(true)
 
@@ -129,6 +159,21 @@ func (s *systemSelector) handler(recv, send ki.Ki, sig int64, data interface{}) 
 	if cbb.CurIndex < len(s.targets) {
 		s.currentSystem = s.targets[cbb.CurIndex]
 		s.updateWorldLableTextAndCamera(s.targets[cbb.CurIndex])
+		svv.UpdateSig()
+	}
+}
+
+func (s *systemSelector) filterHandler(recv, send ki.Ki, sig int64, data interface{}) {
+	svv := recv.Embed(KiT_SceneView).(*gi3d.SceneView)
+	cbb := send.(*gi.ComboBox)
+	//scc := svv.Scene()
+	if cbb.CurIndex < len(filter) {
+		sel := cbb.CurVal.(string)
+		if filter[sel] != nil {
+			s.choose = filter[sel]
+		}
+		s.currentSystem = s.choose()[0].id
+		s.updateWorldLableTextAndCamera(s.currentSystem)
 		svv.UpdateSig()
 	}
 }

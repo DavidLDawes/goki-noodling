@@ -581,6 +581,23 @@ func maxPop() (results []*star) {
 	return
 }
 
+func minPop() (results []*star) {
+	popMin := 199
+	empty :=  make([]*star, 0)
+	results = empty
+	for _, star := range stars {
+		world := worldFromStar(star.id)
+		if world.popBase < popMin {
+			popMin = world.popBase
+			results = append(empty, star)
+		} else if world.popBase == popMin {
+			results = append(results, star)
+		}
+	}
+
+	return
+}
+
 func starsByPop(pop int) (results []*star) {
 	results = make([]*star, 0)
 	for _, star := range stars {
