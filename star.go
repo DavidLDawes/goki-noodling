@@ -313,13 +313,15 @@ func renderStars(sc *gi3d.Scene) {
 	if !rendered {
 		stars = make([]*star, 0)
 		id := 0
-		for x := uint32(0); x < 2; x++ {
-			for y := uint32(0); y < 2; y++ {
-				sector := sector{x: x, y: y, z: 0}
-				for _, star := range getSectorDetails(sector) {
-					star.id = id
-					id++
-					stars = append(stars, star)
+		for x := uint32(0); x < 3; x++ {
+			for y := uint32(0); y < 3; y++ {
+				for z := uint32(0); z < 2; z++ {
+					sector := sector{x: x, y: y, z: z}
+					for _, star := range getSectorDetails(sector) {
+						star.id = id
+						id++
+						stars = append(stars, star)
+					}
 				}
 			}
 		}

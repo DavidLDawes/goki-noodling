@@ -54,8 +54,14 @@ const (
     <p><b>Tech Level</b> %d</p>
     <p><b>Tech Description</b> %s</p>`
 
-	csvTextHdr = "Star, StarPort, Size, Atmosphere, Hydro Percentage, Population, Government, Law Level,Tech Level\n"
-	csvText    = "%d, %s, %d, %s, %d, %d, %s, %s, %d\n"
+	csvTextHdr = "Star, X, Y, Z, StarPort, Size, Atmosphere, Hydro Percentage, Population, Government, Law Level,Tech Level, " +
+		"Jump1 Star and distance, Jump2 Star and distance, Jump3 Star and distance, Jump4 Star and distance, " +
+		"Jump5 Star and distance, Jump6 Star and distance, Jump7 Star and distance, Jump8 Star and distance, " +
+		"Jump9 Star and distance, Jump10 Star and distance, Jump11 Star and distance, Jump12 Star and distance, " +
+		"Jump13 Star and distance, Jump14 Star and distance, Jump15 Star and distance, Jump16 Star and distance, " +
+		"Jum17 Star and distance, Jump18 Star and distance, Jump19 Star and distance, Jump20 Star and distance, " +
+		"Jump21 Star and distance, Jump22 Star and distance, Jump23 Star and distance, Jump28 Star and distance \n"
+	csvText    = "%d, %f, %f, %f, %s, %d, %s, %d, %d, %s, %s, %d, %s\n"
 )
 
 var KiT_SceneView = kit.Types.AddType(&gi3d.SceneView{}, nil)

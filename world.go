@@ -64,12 +64,12 @@ var (
 	traceAtmosphere = atmosphereDetails{description: "Trace", base: 1, tainted: false, trace: true, veryThin: false, thin: false, standard: false, dense: false, exotic: false, corrosive: false, insidious: false}
 	veryThinTainted = atmosphereDetails{description: "Very thin, tainted", base: 2, tainted: true, trace: false, veryThin: true, thin: false, standard: false, dense: false, exotic: false, corrosive: false, insidious: false}
 	veryThin        = atmosphereDetails{description: "Very thin", base: 3, tainted: false, trace: false, veryThin: true, thin: false, standard: false, dense: false, exotic: false, corrosive: false, insidious: false}
-	thinTainted     = atmosphereDetails{description: "Thin, tainted", base: 4, tainted: true, trace: false, veryThin: false, thin: true, standard: false, dense: false, exotic: false, corrosive: false, insidious: false}
+	thinTainted     = atmosphereDetails{description: "Thin - tainted", base: 4, tainted: true, trace: false, veryThin: false, thin: true, standard: false, dense: false, exotic: false, corrosive: false, insidious: false}
 	thin            = atmosphereDetails{description: "Thin", base: 5, tainted: false, trace: false, veryThin: false, thin: true, standard: false, dense: false, exotic: false, corrosive: false, insidious: false}
 	standard        = atmosphereDetails{description: "Standard", base: 6, tainted: false, trace: false, veryThin: false, thin: false, standard: true, dense: false, exotic: false, corrosive: false, insidious: false}
-	standardTainted = atmosphereDetails{description: "Standard, tainted", base: 7, tainted: true, trace: false, veryThin: false, thin: false, standard: true, dense: false, exotic: false, corrosive: false, insidious: false}
+	standardTainted = atmosphereDetails{description: "Standard - tainted", base: 7, tainted: true, trace: false, veryThin: false, thin: false, standard: true, dense: false, exotic: false, corrosive: false, insidious: false}
 	dense           = atmosphereDetails{description: "Dense", base: 8, tainted: false, trace: false, veryThin: false, thin: false, standard: false, dense: true, exotic: false, corrosive: false, insidious: false}
-	denseTainted    = atmosphereDetails{description: "Dense, tainted", base: 9, tainted: true, trace: false, veryThin: false, thin: false, standard: false, dense: true, exotic: false, corrosive: false, insidious: false}
+	denseTainted    = atmosphereDetails{description: "Dense - tainted", base: 9, tainted: true, trace: false, veryThin: false, thin: false, standard: false, dense: true, exotic: false, corrosive: false, insidious: false}
 	exotic          = atmosphereDetails{description: "Exotic", base: 10, tainted: false, trace: false, veryThin: false, thin: false, standard: false, dense: false, exotic: true, corrosive: false, insidious: false}
 	corrosive       = atmosphereDetails{description: "Corrosive", base: 11, tainted: false, trace: false, veryThin: false, thin: false, standard: false, dense: false, exotic: false, corrosive: true, insidious: false}
 	insidious       = atmosphereDetails{description: "Insidious", base: 12, tainted: false, trace: false, veryThin: false, thin: false, standard: false, dense: false, exotic: false, corrosive: false, insidious: true}
@@ -117,8 +117,21 @@ func worldFromStar(fromStarID int) (newWorld *world) {
 
 	header := fmt.Sprintf(hdrText, fromStarID, starPort, size, atmosphereDescription.description, size, hydro,
 		population, government, lawBase, tl)
-	worldCSV := fmt.Sprintf(csvText, fromStarID, starPort, size, atmosphereDescription.description, hydro,
-		population, government, lawLevel, tl)
+	jumps := ""
+	for _, jump  := range jumpsByStar[fromStarID] {
+		if jump.s1ID == fromStarID {
+			if jump.s2ID > -1 {
+				jumps += fmt.Sprintf("jump to %d is %f parsecs, ", jump.s2ID, jump.distance)
+			}
+		} else {
+			if jump.s1ID > -1 {
+				jumps += fmt.Sprintf("jump to %d is %f parsecs, ", jump.s1ID, jump.distance)
+			}
+		}
+	}
+	worldCSV := fmt.Sprintf(csvText, fromStarID, stars[fromStarID].x, stars[fromStarID].y, stars[fromStarID].z,
+		starPort, size, atmosphereDescription.description, hydro,
+		population, government, lawLevel, tl, jumps)
 	newWorld = &world{
 		starID:                fromStarID,
 		starPort:              starPort,
