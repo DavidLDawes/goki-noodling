@@ -5,6 +5,7 @@ import (
 	"image/color"
 	"math"
 	"math/rand"
+	"os"
 	"strconv"
 
 	"github.com/chewxy/math32"
@@ -357,6 +358,32 @@ func renderStars(sc *gi3d.Scene) {
 						connectedStar = lNumber
 					}
 				}
+				f, err := os.Create("traveler-report.csv")
+
+				if err == nil {
+					alreadyPrinted := make([]int, 0)
+					_, err := f.Write([]byte(csvTextHdr))
+					if err != nil {
+						os.Exit(-1)
+					}
+					for _, nextJump := range traceJumps(connectedStar) {
+						if !contains(alreadyPrinted, nextJump.s1ID) && nextJump.s1ID > -1 {
+							_, err := f.Write([]byte(worldFromStar(nextJump.s1ID).worldCSV))
+							if err != nil {
+								os.Exit(-1)
+							}
+							alreadyPrinted = append(alreadyPrinted, nextJump.s1ID)
+						}
+						if !contains(alreadyPrinted, nextJump.s2ID) && nextJump.s2ID > -1  {
+							_, err := f.Write([]byte(worldFromStar(nextJump.s2ID).worldCSV))
+							if err != nil {
+								os.Exit(-1)
+							}
+							alreadyPrinted = append(alreadyPrinted, nextJump.s2ID)
+						}
+
+					}
+				}
 
 				if !faster {
 					popMax := 0
@@ -598,6 +625,17 @@ func addIfNew(soFar []*simpleLine, jump *jump) (result []*simpleLine) {
 			jumpInfo: jump,
 		}
 		result = append(result, nextLine)
+	}
+	return
+}
+
+func contains(soFar []int, next int) (yes bool) {
+	yes = false
+	for _, sID := range soFar {
+		if sID == next {
+			yes = true
+			break
+		}
 	}
 	return
 }

@@ -49,7 +49,7 @@ func mainRun() {
 	selection.win = win
 	selection.scene = sc
 	selection.viewPort = vp
-	selection.updateWorldLableTextAndCamera(0)
+	selection.updateWorldLableTextAndCamera(connectedStar)
 	appName := gi.AppName()
 	mainMenu := win.MainMenu
 	mainMenu.ConfigMenus([]string{appName, "File", "Edit", "Window"})

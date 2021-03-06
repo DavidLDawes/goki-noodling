@@ -41,7 +41,8 @@ var selection = systemSelector{
 	choose:         allStars,
 }
 
-const hdrText = `<p>Star %d </p>
+const (
+	hdrText = `<p>Star %d </p>
 	<p><b>StarPort</b> %s</p>
 	<p><b>Size</b> %d  </p>
 	<p><b>Atmosphere</b> %s  </p>
@@ -52,6 +53,10 @@ const hdrText = `<p>Star %d </p>
     <p><b>Law Level</b> %d</p>
     <p><b>Tech Level</b> %d</p>
     <p><b>Tech Description</b> %s</p>`
+
+	csvTextHdr = "Star, StarPort, Size, Atmosphere, Hydro Percentage, Population, Government, Law Level,Tech Level\n"
+	csvText    = "%d, %s, %d, %s, %d, %d, %s, %s, %d\n"
+)
 
 var KiT_SceneView = kit.Types.AddType(&gi3d.SceneView{}, nil)
 
@@ -129,7 +134,6 @@ func (s *systemSelector) updateWorldLableTextAndCamera(systemID int) (header str
 		Z: 0,
 	})
 
-	s.scene.SetActiveStateUpdt(false)
 	for id, l := range lines {
 		thicker := float32(1.0)
 		if l.jumpInfo.s1ID == systemID ||
@@ -149,6 +153,8 @@ func (s *systemSelector) updateWorldLableTextAndCamera(systemID int) (header str
 		}
 		lines[id].lines.Width = mat32.Vec2{X: thickness, Y: thickness}
 	}
+	s.scene.SetActiveStateUpdt(false)
+
 	return
 }
 

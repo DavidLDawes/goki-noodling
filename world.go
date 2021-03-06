@@ -36,6 +36,7 @@ type world struct {
 	techLevel             string
 	techLevelBase         int
 	worldHeader           string
+	worldCSV              string
 	worldLayout           *gi.Layout
 	SystemDetails         *gi.Label
 	jumpButtons           []*gi.Button
@@ -115,7 +116,9 @@ func worldFromStar(fromStarID int) (newWorld *world) {
 	techLevel, tl := getTechLevel(random1s, starPort, size, atmosphereBase, hydroBase, popBase, governmentBase)
 
 	header := fmt.Sprintf(hdrText, fromStarID, starPort, size, atmosphereDescription.description, size, hydro,
-		population, government, lawBase, tl, techLevel)
+		population, government, lawBase, tl)
+	worldCSV := fmt.Sprintf(csvText, fromStarID, starPort, size, atmosphereDescription.description, hydro,
+		population, government, lawLevel, tl)
 	newWorld = &world{
 		starID:                fromStarID,
 		starPort:              starPort,
@@ -138,6 +141,7 @@ func worldFromStar(fromStarID int) (newWorld *world) {
 		techLevel:             techLevel,
 		techLevelBase:         tl,
 		worldHeader:           header,
+		worldCSV:              worldCSV,
 		SystemDetails:         workingWorld.SystemDetails,
 	}
 
