@@ -91,7 +91,7 @@ var (
 	offsets    = position{x: sizeFloats.x / -2.0, y: sizeFloats.y / -2.0, z: sizeFloats.z / -2.0}
 
 	intensity = []uint8{
-		0, 0, intensityStep, 2 * intensityStep, 3 * intensityStep, 4 * intensityStep, 2 * intensityStep,
+		0, 0, intensityStep, 2 * intensityStep, 3 * intensityStep, 4 * intensityStep, 5 * intensityStep,
 	}
 	jumpColors = []gist.Color{
 		gist.Color(color.RGBA{R: math.MaxUint8 - eighth, G: 0, B: 0, A: math.MaxUint8 - intensity[0]}),
@@ -99,14 +99,14 @@ var (
 		gist.Color(color.RGBA{R: math.MaxUint8 - eighth, G: math.MaxUint8 - eighth, B: 0, A: math.MaxUint8 - intensity[2]}),
 		gist.Color(color.RGBA{R: 0, G: math.MaxUint8 - eighth, B: 0, A: math.MaxUint8 - intensity[3]}),
 		gist.Color(color.RGBA{R: 0, G: 0, B: math.MaxUint8 - eighth, A: math.MaxUint8 - intensity[4]}),
-		// gist.Color(color.RGBA{R: math.MaxUint8, G: 0, B: math.MaxUint8, A: math.MaxUint8 - intensity[step++]}),//
+		//gist.Color(color.RGBA{R: math.MaxUint8 - quarter, G: 0, B: math.MaxUint8 - quarter, A: math.MaxUint8 - intensity[5]}),//
 	}
 
 	tween  = uint8(sevenEighths)
 	med    = uint8(threeQuarters)
 	dim    = uint8(half)
 	noJump = jump{color: gist.Color(color.RGBA{R: 0, G: 0, B: 0, A: 0}), activeColor: gist.Color(color.RGBA{R: 0, G: 0, B: 0, A: 0}),
-		parsecs: 0, distance: 0.0, s1ID: -1, s2ID: -1}
+		parsecs: 0, distance: 20480.0, s1ID: -1, s2ID: -1}
 	noLine = simpleLine{from: position{x: 0, y: 0, z: 0}, to: position{x: 0, y: 0, z: 0}, jumpInfo: &noJump, lines: &gi3d.Lines{}}
 
 	jumpsByStar = make(map[int][]*jump)
@@ -229,7 +229,7 @@ var (
 
 func getStarDetails(classDetails classDetails, sector sector, random1m *rand.Rand) []*star {
 	stars := make([]*star, 0)
-	loopSize := int32(1440 * (classDetails.odds - classDetails.fudge + 2*classDetails.fudge*random1m.Float32()))
+	loopSize := int32(800 * (classDetails.odds - classDetails.fudge + 2*classDetails.fudge*random1m.Float32()))
 	for i := 0; i < int(loopSize); i++ {
 		nextStar := star{}
 		nextStar.id = len(stars)
@@ -313,8 +313,8 @@ func renderStars(sc *gi3d.Scene) {
 	if !rendered {
 		stars = make([]*star, 0)
 		id := 0
-		for x := uint32(0); x < 3; x++ {
-			for y := uint32(0); y < 3; y++ {
+		for x := uint32(0); x < 2; x++ {
+			for y := uint32(0); y < 2; y++ {
 				for z := uint32(0); z < 2; z++ {
 					sector := sector{x: x, y: y, z: z}
 					for _, star := range getSectorDetails(sector) {
@@ -465,24 +465,23 @@ func checkForJumps(stars []*star, star *star, id int) (result []*simpleLine) {
 			result = addIfNew(result, jumpColor)
 		}
 	}
-	closest := []*simpleLine{&noLine, &noLine}
-	if len(result) > 2 {
+	closest := []*simpleLine{&noLine, &noLine, &noLine}
+	if len(result) > 3 {
 		for _, nextSimpleLine := range result {
 			if nextSimpleLine.jumpInfo.distance < closest[0].jumpInfo.distance {
-				if closest[0].jumpInfo.distance < closest[1].jumpInfo.distance {
-					closest[1] = closest[0]
-				}
+				closest[2] = closest[1]
+				closest[1] = closest[0]
 				closest[0] = nextSimpleLine
-			} else if nextSimpleLine.jumpInfo.distance < result[1].jumpInfo.distance {
+			} else if nextSimpleLine.jumpInfo.distance < closest[1].jumpInfo.distance {
+				closest[2] = closest[1]
 				closest[1] = nextSimpleLine
+			} else if nextSimpleLine.jumpInfo.distance < closest[2].jumpInfo.distance {
+				closest[2] = nextSimpleLine
 			}
 		}
-		if closest[0].jumpInfo.parsecs > 3 || closest[1].jumpInfo.parsecs > 4 {
-			result = append(result, closest[0])
-		} else {
-			result = closest
-		}
+		result = closest
 	}
+
 	return
 }
 

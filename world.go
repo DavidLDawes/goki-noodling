@@ -62,7 +62,7 @@ type atmosphereDetails struct {
 var (
 	noAtmosphere    = atmosphereDetails{description: "No atmosphere", base: 0, tainted: false, trace: false, veryThin: false, thin: false, standard: false, dense: false, exotic: false, corrosive: false, insidious: false}
 	traceAtmosphere = atmosphereDetails{description: "Trace", base: 1, tainted: false, trace: true, veryThin: false, thin: false, standard: false, dense: false, exotic: false, corrosive: false, insidious: false}
-	veryThinTainted = atmosphereDetails{description: "Very thin, tainted", base: 2, tainted: true, trace: false, veryThin: true, thin: false, standard: false, dense: false, exotic: false, corrosive: false, insidious: false}
+	veryThinTainted = atmosphereDetails{description: "Very thin - tainted", base: 2, tainted: true, trace: false, veryThin: true, thin: false, standard: false, dense: false, exotic: false, corrosive: false, insidious: false}
 	veryThin        = atmosphereDetails{description: "Very thin", base: 3, tainted: false, trace: false, veryThin: true, thin: false, standard: false, dense: false, exotic: false, corrosive: false, insidious: false}
 	thinTainted     = atmosphereDetails{description: "Thin - tainted", base: 4, tainted: true, trace: false, veryThin: false, thin: true, standard: false, dense: false, exotic: false, corrosive: false, insidious: false}
 	thin            = atmosphereDetails{description: "Thin", base: 5, tainted: false, trace: false, veryThin: false, thin: true, standard: false, dense: false, exotic: false, corrosive: false, insidious: false}
@@ -298,7 +298,7 @@ var lawLevelByBase = []string{
 	"Military weapons (automatics) prohibited",
 	"Light assault weapons prohibited",
 	"Personal firearms prohibited",
-	"Most firearms (except shotgun) prohibited, weapons discouraged",
+	"Most firearms (except shotgun) prohibited all weapons discouraged",
 	"Shotguns prohibited",
 	"Long bladed weapons prohibited",
 	"Possession of any weapon outside residence prohibited",
@@ -352,6 +352,9 @@ func getTechLevel(rand *rand.Rand, starPort string, size int, atm int, hydro int
 		diceModifier -= 2
 	}
 	tl = d6(rand) + diceModifier
+	if tl < 1 {
+		tl = 1
+	}
 	if tl > 9 {
 		switch tl {
 		case 10:
