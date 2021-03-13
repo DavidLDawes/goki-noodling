@@ -3,12 +3,13 @@ package main
 import (
 	"encoding/binary"
 	"fmt"
-	"github.com/goki/gi/gi"
-	"github.com/goki/gi/gist"
 	"image/color"
 	"math"
 	"math/rand"
 	"strconv"
+
+	"github.com/goki/gi/gi"
+	"github.com/goki/gi/gist"
 
 	"github.com/spaolacci/murmur3"
 )
@@ -35,6 +36,7 @@ type world struct {
 	techLevel             string
 	techLevelBase         int
 	worldHeader           string
+	worldCSV              string
 	worldLayout           *gi.Layout
 	SystemDetails         *gi.Label
 	jumpButtons           []*gi.Button
@@ -42,6 +44,7 @@ type world struct {
 }
 
 var workingWorld = &world{}
+
 type atmosphereDetails struct {
 	description string
 	base        int
@@ -57,22 +60,21 @@ type atmosphereDetails struct {
 }
 
 var (
-	noAtmosphere = atmosphereDetails{description: "No atmosphere", base: 0, tainted: false, trace: false, veryThin: false, thin: false, standard: false, dense: false, exotic: false, corrosive: false, insidious: false}
+	noAtmosphere    = atmosphereDetails{description: "No atmosphere", base: 0, tainted: false, trace: false, veryThin: false, thin: false, standard: false, dense: false, exotic: false, corrosive: false, insidious: false}
 	traceAtmosphere = atmosphereDetails{description: "Trace", base: 1, tainted: false, trace: true, veryThin: false, thin: false, standard: false, dense: false, exotic: false, corrosive: false, insidious: false}
-	veryThinTainted = atmosphereDetails{description: "Very thin, tainted", base: 2, tainted: true, trace: false, veryThin: true, thin: false, standard: false, dense: false, exotic: false, corrosive: false, insidious: false}
-	veryThin = atmosphereDetails{description: "Very thin", base: 3, tainted: false, trace: false, veryThin: true, thin: false, standard: false, dense: false, exotic: false, corrosive: false, insidious: false}
-	thinTainted = atmosphereDetails{description: "Thin, tainted", base: 4, tainted: true, trace: false, veryThin: false, thin: true, standard: false, dense: false, exotic: false, corrosive: false, insidious: false}
-	thin = atmosphereDetails{description: "Thin", base: 5, tainted: false, trace: false, veryThin: false, thin: true, standard: false, dense: false, exotic: false, corrosive: false, insidious: false}
-	standard = atmosphereDetails{description: "Standard", base: 6, tainted: false, trace: false, veryThin: false, thin: false, standard: true, dense: false, exotic: false, corrosive: false, insidious: false}
-	standardTainted = atmosphereDetails{description: "Standard, tainted", base: 7, tainted: true, trace: false, veryThin: false, thin: false, standard: true, dense: false, exotic: false, corrosive: false, insidious: false}
-	dense = atmosphereDetails{description: "Dense", base: 8, tainted: false, trace: false, veryThin: false, thin: false, standard: false, dense: true, exotic: false, corrosive: false, insidious: false}
-	denseTainted = atmosphereDetails{description: "Dense, tainted", base: 9, tainted: true, trace: false, veryThin: false, thin: false, standard: false, dense: true, exotic: false, corrosive: false, insidious: false}
-	exotic = atmosphereDetails{description: "Exotic", base: 10, tainted: false, trace: false, veryThin: false, thin: false, standard: false, dense: false, exotic: true, corrosive: false, insidious: false}
-	corrosive = atmosphereDetails{description: "Corrosive", base: 11, tainted: false, trace: false, veryThin: false, thin: false, standard: false, dense: false, exotic: false, corrosive: true, insidious: false}
-	insidious = atmosphereDetails{description: "Insidious", base: 12, tainted: false, trace: false, veryThin: false, thin: false, standard: false, dense: false, exotic: false, corrosive: false, insidious: true}
+	veryThinTainted = atmosphereDetails{description: "Very thin - tainted", base: 2, tainted: true, trace: false, veryThin: true, thin: false, standard: false, dense: false, exotic: false, corrosive: false, insidious: false}
+	veryThin        = atmosphereDetails{description: "Very thin", base: 3, tainted: false, trace: false, veryThin: true, thin: false, standard: false, dense: false, exotic: false, corrosive: false, insidious: false}
+	thinTainted     = atmosphereDetails{description: "Thin - tainted", base: 4, tainted: true, trace: false, veryThin: false, thin: true, standard: false, dense: false, exotic: false, corrosive: false, insidious: false}
+	thin            = atmosphereDetails{description: "Thin", base: 5, tainted: false, trace: false, veryThin: false, thin: true, standard: false, dense: false, exotic: false, corrosive: false, insidious: false}
+	standard        = atmosphereDetails{description: "Standard", base: 6, tainted: false, trace: false, veryThin: false, thin: false, standard: true, dense: false, exotic: false, corrosive: false, insidious: false}
+	standardTainted = atmosphereDetails{description: "Standard - tainted", base: 7, tainted: true, trace: false, veryThin: false, thin: false, standard: true, dense: false, exotic: false, corrosive: false, insidious: false}
+	dense           = atmosphereDetails{description: "Dense", base: 8, tainted: false, trace: false, veryThin: false, thin: false, standard: false, dense: true, exotic: false, corrosive: false, insidious: false}
+	denseTainted    = atmosphereDetails{description: "Dense - tainted", base: 9, tainted: true, trace: false, veryThin: false, thin: false, standard: false, dense: true, exotic: false, corrosive: false, insidious: false}
+	exotic          = atmosphereDetails{description: "Exotic", base: 10, tainted: false, trace: false, veryThin: false, thin: false, standard: false, dense: false, exotic: true, corrosive: false, insidious: false}
+	corrosive       = atmosphereDetails{description: "Corrosive", base: 11, tainted: false, trace: false, veryThin: false, thin: false, standard: false, dense: false, exotic: false, corrosive: true, insidious: false}
+	insidious       = atmosphereDetails{description: "Insidious", base: 12, tainted: false, trace: false, veryThin: false, thin: false, standard: false, dense: false, exotic: false, corrosive: false, insidious: true}
 
-
-	atmospheres = []atmosphereDetails {
+	atmospheres = []atmosphereDetails{
 		noAtmosphere, traceAtmosphere, veryThinTainted, veryThin, thinTainted, thin, standard, standardTainted, dense, denseTainted, exotic, corrosive, insidious, insidious, insidious, insidious, insidious,
 	}
 )
@@ -114,7 +116,22 @@ func worldFromStar(fromStarID int) (newWorld *world) {
 	techLevel, tl := getTechLevel(random1s, starPort, size, atmosphereBase, hydroBase, popBase, governmentBase)
 
 	header := fmt.Sprintf(hdrText, fromStarID, starPort, size, atmosphereDescription.description, size, hydro,
-		population, government, lawBase	, tl, techLevel)
+		population, government, lawBase, tl)
+	jumps := ""
+	for _, jump  := range jumpsByStar[fromStarID] {
+		if jump.s1ID == fromStarID {
+			if jump.s2ID > -1 {
+				jumps += fmt.Sprintf("jump to %d is %f parsecs, ", jump.s2ID, jump.distance)
+			}
+		} else {
+			if jump.s1ID > -1 {
+				jumps += fmt.Sprintf("jump to %d is %f parsecs, ", jump.s1ID, jump.distance)
+			}
+		}
+	}
+	worldCSV := fmt.Sprintf(csvText, fromStarID, stars[fromStarID].x, stars[fromStarID].y, stars[fromStarID].z,
+		starPort, size, atmosphereDescription.description, hydro,
+		population, government, lawLevel, tl, jumps)
 	newWorld = &world{
 		starID:                fromStarID,
 		starPort:              starPort,
@@ -137,6 +154,7 @@ func worldFromStar(fromStarID int) (newWorld *world) {
 		techLevel:             techLevel,
 		techLevelBase:         tl,
 		worldHeader:           header,
+		worldCSV:              worldCSV,
 		SystemDetails:         workingWorld.SystemDetails,
 	}
 
@@ -203,9 +221,7 @@ func getAtmosphereFromID(fromAtmosphereBase int) (result atmosphereDetails) {
 	case 12, 13, 14, 15, 16:
 		return insidious
 	}
-
 }
-
 
 func getAtmosphere(rand *rand.Rand, size int) (result atmosphereDetails, base int) {
 	base = twoD6(rand) + size - 7
@@ -282,7 +298,7 @@ var lawLevelByBase = []string{
 	"Military weapons (automatics) prohibited",
 	"Light assault weapons prohibited",
 	"Personal firearms prohibited",
-	"Most firearms (except shotgun) prohibited, weapons discouraged",
+	"Most firearms (except shotgun) prohibited all weapons discouraged",
 	"Shotguns prohibited",
 	"Long bladed weapons prohibited",
 	"Possession of any weapon outside residence prohibited",
@@ -336,6 +352,9 @@ func getTechLevel(rand *rand.Rand, starPort string, size int, atm int, hydro int
 		diceModifier -= 2
 	}
 	tl = d6(rand) + diceModifier
+	if tl < 1 {
+		tl = 1
+	}
 	if tl > 9 {
 		switch tl {
 		case 10:
@@ -501,28 +520,270 @@ func putWorldHeader(layout *gi.Layout) {
 	workingWorld.SystemDetails.SetProp("line-height", 1.5)
 }
 
-func addJumpButtons() {
-	workingWorld.jumpButtons = make([]*gi.Button, 0)
-	workingWorld.jumps = make([]int, 0)
-
-	for id, nextJump := range jumpsByStar[workingWorld.starID] {
-		name := "jump-" + strconv.Itoa(id)
-		nextJumpButton := gi.AddNewButton(workingWorld.worldLayout, name)
-		nextJumpButton.SetText("System " + strconv.Itoa(id))
-		workingWorld.jumpButtons = append(workingWorld.jumpButtons, nextJumpButton)
-		if workingWorld.starID == nextJump.s1ID {
-			workingWorld.jumps = append(workingWorld.jumps, nextJump.s2ID)
-		} else {
-			workingWorld.jumps = append(workingWorld.jumps, nextJump.s1ID)
-		}
-	}
-
-}
-
 func getWorldHeader() string {
 	return workingWorld.SystemDetails.Text
 }
 
-func  setWorldHeader(header string) {
+func setWorldHeader(header string) {
 	workingWorld.SystemDetails.SetText(header)
+}
+
+
+
+func maxTech() (results []*star) {
+	techMax := -99
+	empty :=  make([]*star, 0)
+	results = empty
+	for _, star := range stars {
+		world := worldFromStar(star.id)
+		if world.techLevelBase > techMax {
+			techMax = world.techLevelBase
+			results = append(empty, star)
+		} else if world.techLevelBase == techMax {
+			results = append(results, star)
+		}
+	}
+
+	return
+}
+
+
+func starsByTech(tech int) (results []*star) {
+	results = make([]*star, 0)
+	for _, star := range stars {
+		world := worldFromStar(star.id)
+		if world.techLevelBase== tech {
+			results = append(results, star)
+		}
+	}
+
+	return
+}
+
+func starsTechAtLeast(tech int) (results []*star) {
+	results = make([]*star, 0)
+	for _, star := range stars {
+		world := worldFromStar(star.id)
+		if world.techLevelBase >= tech {
+			results = append(results, star)
+		}
+	}
+
+	return
+}
+
+func starsTechAtMost(tech int) (results []*star) {
+	results = make([]*star, 0)
+	for _, star := range stars {
+		world := worldFromStar(star.id)
+		if world.techLevelBase <= tech {
+			results = append(results, star)
+		}
+	}
+
+	return
+}
+
+func maxPop() (results []*star) {
+	popMax := -99
+	empty :=  make([]*star, 0)
+	results = empty
+	for _, star := range stars {
+		world := worldFromStar(star.id)
+		if world.popBase > popMax {
+			popMax = world.popBase
+			results = append(empty, star)
+		} else if world.popBase == popMax {
+			results = append(results, star)
+		}
+	}
+
+	return
+}
+
+func minPop() (results []*star) {
+	popMin := 199
+	empty :=  make([]*star, 0)
+	results = empty
+	for _, star := range stars {
+		world := worldFromStar(star.id)
+		if world.popBase < popMin {
+			popMin = world.popBase
+			results = append(empty, star)
+		} else if world.popBase == popMin {
+			results = append(results, star)
+		}
+	}
+
+	return
+}
+
+func starsByPop(pop int) (results []*star) {
+	results = make([]*star, 0)
+	for _, star := range stars {
+		world := worldFromStar(star.id)
+		if world.popBase == pop {
+			results = append(results, star)
+		}
+	}
+
+	return
+}
+
+func starsPopAtLeast(pop int) (results []*star) {
+	results = make([]*star, 0)
+	for _, star := range stars {
+		world := worldFromStar(star.id)
+		if world.popBase >= pop {
+			results = append(results, star)
+		}
+	}
+
+	return
+}
+
+func starsPopAtMost(pop int) (results []*star) {
+	results = make([]*star, 0)
+	for _, star := range stars {
+		world := worldFromStar(star.id)
+		if world.popBase <= pop {
+			results = append(results, star)
+		}
+	}
+
+	return
+}
+
+func allStars() (results []*star) {
+	results = stars
+
+	return
+}
+
+func maxSize() (results []*star) {
+	sizeMax := -99
+	empty :=  make([]*star, 0)
+	results = empty
+	for _, star := range stars {
+		world := worldFromStar(star.id)
+		if world.popBase > sizeMax {
+			sizeMax = world.popBase
+			results = append(empty, star)
+		} else if world.popBase == sizeMax {
+			results = append(results, star)
+		}
+	}
+
+	return
+}
+
+func minSize() (results []*star) {
+	sizeMin := 99
+	empty :=  make([]*star, 0)
+	results = empty
+	for _, star := range stars {
+		world := worldFromStar(star.id)
+		if world.popBase < sizeMin {
+			sizeMin = world.popBase
+			results = append(empty, star)
+		} else if world.popBase == sizeMin {
+			results = append(results, star)
+		}
+	}
+
+	return
+}
+
+func starsBySize(size int) (results []*star) {
+	results = make([]*star, 0)
+	for _, star := range stars {
+		world := worldFromStar(star.id)
+		if world.sizeBase == size {
+			results = append(results, star)
+		}
+	}
+
+	return
+}
+
+func starsSizeAtMost(size int) (results []*star) {
+	results = make([]*star, 0)
+	for _, star := range stars {
+		world := worldFromStar(star.id)
+		if world.sizeBase <= size {
+			results = append(results, star)
+		}
+	}
+
+	return
+}
+
+func starsSizeAtLeast(size int) (results []*star) {
+	results = make([]*star, 0)
+	for _, star := range stars {
+		world := worldFromStar(star.id)
+		if world.sizeBase >= size {
+			results = append(results, star)
+		}
+	}
+
+	return
+}
+
+func starHydroMax() (results []*star) {
+	hydroMax := -100
+	empty :=  make([]*star, 0)
+	results = empty
+	for _, star := range stars {
+		world := worldFromStar(star.id)
+		if world.hydroBase > hydroMax {
+			hydroMax = world.hydroBase
+			results = append(empty, star)
+		} else if world.hydroBase == hydroMax {
+			results = append(results, star)
+		}
+	}
+
+	return
+}
+
+func starHydroMin() (results []*star) {
+	hydroMin := 300
+	empty :=  make([]*star, 0)
+	results = empty
+	for _, star := range stars {
+		world := worldFromStar(star.id)
+		if world.hydroBase < hydroMin {
+			hydroMin = world.hydroBase
+			results = append(empty, star)
+		} else if world.hydroBase == hydroMin {
+			results = append(results, star)
+		}
+	}
+
+	return
+}
+
+func starHydroAtLeast(hydroMin int) (results []*star) {
+	results = make([]*star, 0)
+	for _, star := range stars {
+		world := worldFromStar(star.id)
+		if world.hydroBase >= hydroMin {
+			results = append(results, star)
+		}
+	}
+
+	return
+}
+
+func starHydroAtMost(hydroMax int) (results []*star) {
+	results = make([]*star, 0)
+	for _, star := range stars {
+		world := worldFromStar(star.id)
+		if world.hydroBase <= hydroMax {
+			results = append(results, star)
+		}
+	}
+
+	return
 }

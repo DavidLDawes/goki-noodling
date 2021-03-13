@@ -5,6 +5,7 @@ import (
 	"image/color"
 	"math"
 	"math/rand"
+	"os"
 	"strconv"
 
 	"github.com/chewxy/math32"
@@ -63,28 +64,34 @@ type position struct {
 }
 
 type jump struct {
-	color    gist.Color
-	parsecs  int
-	distance float32
-	s1ID     int
-	s2ID     int
+	color       gist.Color
+	activeColor gist.Color
+	parsecs     int
+	distance    float32
+	s1ID        int
+	s2ID        int
 }
 
 type simpleLine struct {
 	from     position
 	to       position
 	jumpInfo *jump
+	lines    *gi3d.Lines
 }
 
 const (
 	intensityStep = 8
+	faster        = true
+	fastest       = false
 )
 
 var (
-	offsets = position{x: -2.5, y: -1.0, z: 0.0}
+	size       = position{x: 2, y: 2, z: 1}
+	sizeFloats = position{x: float32(size.x), y: float32(size.y), z: float32(size.z)}
+	offsets    = position{x: sizeFloats.x / -2.0, y: sizeFloats.y / -2.0, z: sizeFloats.z / -2.0}
 
 	intensity = []uint8{
-		0, 0, intensityStep, 2 * intensityStep, 3 * intensityStep, 4 * intensityStep, 2 * intensityStep,
+		0, 0, intensityStep, 2 * intensityStep, 3 * intensityStep, 4 * intensityStep, 5 * intensityStep,
 	}
 	jumpColors = []gist.Color{
 		gist.Color(color.RGBA{R: math.MaxUint8 - eighth, G: 0, B: 0, A: math.MaxUint8 - intensity[0]}),
@@ -92,14 +99,15 @@ var (
 		gist.Color(color.RGBA{R: math.MaxUint8 - eighth, G: math.MaxUint8 - eighth, B: 0, A: math.MaxUint8 - intensity[2]}),
 		gist.Color(color.RGBA{R: 0, G: math.MaxUint8 - eighth, B: 0, A: math.MaxUint8 - intensity[3]}),
 		gist.Color(color.RGBA{R: 0, G: 0, B: math.MaxUint8 - eighth, A: math.MaxUint8 - intensity[4]}),
-		// gist.Color(color.RGBA{R: math.MaxUint8, G: 0, B: math.MaxUint8, A: math.MaxUint8 - intensity[step++]}),//
+		//gist.Color(color.RGBA{R: math.MaxUint8 - quarter, G: 0, B: math.MaxUint8 - quarter, A: math.MaxUint8 - intensity[5]}),//
 	}
 
 	tween  = uint8(sevenEighths)
 	med    = uint8(threeQuarters)
 	dim    = uint8(half)
-	noJump = jump{gist.Color(color.RGBA{R: 0, G: 0, B: 0, A: 0}), 500000000.0, 500000000.0, -1, -1}
-	noLine = simpleLine{from: position{x: 0, y: 0, z: 0}, to: position{x: 0, y: 0, z: 0}, jumpInfo: &noJump}
+	noJump = jump{color: gist.Color(color.RGBA{R: 0, G: 0, B: 0, A: 0}), activeColor: gist.Color(color.RGBA{R: 0, G: 0, B: 0, A: 0}),
+		parsecs: 0, distance: 20480.0, s1ID: -1, s2ID: -1}
+	noLine = simpleLine{from: position{x: 0, y: 0, z: 0}, to: position{x: 0, y: 0, z: 0}, jumpInfo: &noJump, lines: &gi3d.Lines{}}
 
 	jumpsByStar = make(map[int][]*jump)
 
@@ -221,7 +229,7 @@ var (
 
 func getStarDetails(classDetails classDetails, sector sector, random1m *rand.Rand) []*star {
 	stars := make([]*star, 0)
-	loopSize := int32(500 * (classDetails.odds - classDetails.fudge + 2*classDetails.fudge*random1m.Float32()))
+	loopSize := int32(800 * (classDetails.odds - classDetails.fudge + 2*classDetails.fudge*random1m.Float32()))
 	for i := 0; i < int(loopSize); i++ {
 		nextStar := star{}
 		nextStar.id = len(stars)
@@ -289,14 +297,13 @@ func distance(s1 *star, s2 *star) float32 {
 	return math32.Sqrt((s1.x-s2.x)*(s1.x-s2.x) + (s1.y-s2.y)*(s1.y-s2.y) + (s1.z-s2.z)*(s1.z-s2.z))
 }
 
-var stars []*star
-
 var (
+	stars []*star
+	lines []*simpleLine
+
 	sName       = "sphere"
 	sphereModel *gi3d.Sphere
-)
 
-var (
 	rendered      = false
 	connectedStar int
 	highWater     int
@@ -306,13 +313,15 @@ func renderStars(sc *gi3d.Scene) {
 	if !rendered {
 		stars = make([]*star, 0)
 		id := 0
-		for x := uint32(0); x < 4; x++ {
+		for x := uint32(0); x < 2; x++ {
 			for y := uint32(0); y < 2; y++ {
-				sector := sector{x: x, y: y, z: 0}
-				for _, star := range getSectorDetails(sector) {
-					star.id = id
-					id++
-					stars = append(stars, star)
+				for z := uint32(0); z < 2; z++ {
+					sector := sector{x: x, y: y, z: z}
+					for _, star := range getSectorDetails(sector) {
+						star.id = id
+						id++
+						stars = append(stars, star)
+					}
 				}
 			}
 		}
@@ -320,7 +329,7 @@ func renderStars(sc *gi3d.Scene) {
 			sphereModel = &gi3d.Sphere{}
 			sphereModel.Reset()
 			sphereModel = gi3d.AddNewSphere(sc, sName, 0.002, 24)
-			lines := make([]*simpleLine, 0)
+			lines = make([]*simpleLine, 0)
 			sName = "sphere"
 			for _, star := range stars {
 				starSphere := gi3d.AddNewSolid(sc, sc, sName, sphereModel.Name())
@@ -330,100 +339,118 @@ func renderStars(sc *gi3d.Scene) {
 			for id, star := range stars {
 				for _, jump := range checkForJumps(stars, star, id) {
 					lines = append(lines, jump)
-					if jump.jumpInfo.distance < 3 {
+					if jump.jumpInfo.distance < 3.0 {
 						jumpsByStar[star.id] = append(jumpsByStar[star.id], jump.jumpInfo)
+						if star.id == jump.jumpInfo.s2ID {
+							jumpsByStar[jump.jumpInfo.s1ID] = append(jumpsByStar[jump.jumpInfo.s1ID], jump.jumpInfo)
+						} else {
+							jumpsByStar[jump.jumpInfo.s2ID] = append(jumpsByStar[jump.jumpInfo.s2ID], jump.jumpInfo)
+						}
 					}
 				}
 			}
 
-			rendered = true
-			highWater = -1
-			for lNumber := 0; lNumber < len(stars); lNumber++ {
-				tJumps := traceJumps(lNumber)
-				if len(tJumps) > highWater {
-					highWater = len(tJumps)
-					connectedStar = lNumber
+			if !fastest {
+				rendered = true
+				highWater = -1
+				for lNumber := 0; lNumber < len(stars); lNumber++ {
+					tJumps := traceJumps(lNumber)
+					if len(tJumps) > highWater {
+						highWater = len(tJumps)
+						connectedStar = lNumber
+					}
+				}
+				f, err := os.Create("traveler-report.csv")
+
+				if err == nil {
+					alreadyPrinted := make([]int, 0)
+					_, err := f.Write([]byte(csvTextHdr))
+					if err != nil {
+						os.Exit(-1)
+					}
+					for _, nextJump := range traceJumps(connectedStar) {
+						if !contains(alreadyPrinted, nextJump.s1ID) && nextJump.s1ID > -1 {
+							_, err := f.Write([]byte(worldFromStar(nextJump.s1ID).worldCSV))
+							if err != nil {
+								os.Exit(-1)
+							}
+							alreadyPrinted = append(alreadyPrinted, nextJump.s1ID)
+						}
+						if !contains(alreadyPrinted, nextJump.s2ID) && nextJump.s2ID > -1  {
+							_, err := f.Write([]byte(worldFromStar(nextJump.s2ID).worldCSV))
+							if err != nil {
+								os.Exit(-1)
+							}
+							alreadyPrinted = append(alreadyPrinted, nextJump.s2ID)
+						}
+
+					}
+				}
+
+				if !faster {
+					popMax := 0
+					bigWorld := worldFromStar(stars[0].id)
+					bigStar := *stars[0]
+					techMax := 0
+					techWorld := worldFromStar(stars[0].id)
+					techStar := *stars[0]
+
+					for _, star := range stars {
+						world := worldFromStar(star.id)
+						if world.techLevelBase > techMax {
+							techMax = world.techLevelBase
+							techWorld = world
+							techStar = *star
+						}
+						if world.popBase > popMax {
+							popMax = world.popBase
+							bigWorld = world
+							bigStar = *star
+						}
+					}
+
+					if techMax > popMax {
+						techMax += 1
+					}
+					if bigWorld.popBase > popMax {
+						techMax += 1
+					}
+					if bigStar.pixels > 0 {
+						techMax += 1
+					}
+					if techWorld.popBase > popMax {
+						techMax += 1
+					}
+					if techStar.pixels > 0 {
+						techMax += 1
+					}
 				}
 			}
-
-			traceJumps := traceJumps(connectedStar)
-			brighter := uint8(0)
-			thicker := float32(1.0)
-
-			popMax := 0
-			bigWorld := worldFromStar(stars[0].id)
-			bigStar := *stars[0]
-			techMax := 0
-			techWorld := worldFromStar(stars[0].id)
-			techStar := *stars[0]
-
-			for _, star := range stars {
-				world := worldFromStar(star.id)
-				if world.techLevelBase > techMax {
-					techMax = world.techLevelBase
-					techWorld = world
-					techStar = *star
-				}
-				if world.popBase > popMax {
-					popMax = world.popBase
-					bigWorld = world
-					bigStar = *star
-				}
-			}
-
-			if techMax > popMax {
-				techMax += 1
-			}
-			if bigWorld.popBase > popMax {
-				techMax += 1
-			}
-			if bigStar.pixels > 0 {
-				techMax += 1
-			}
-			if techWorld.popBase > popMax {
-				techMax += 1
-			}
-			if techStar.pixels > 0 {
-				techMax += 1
-			}
+			// fastest case
 			for id, lin := range lines {
-				brighter = 0
-				thicker = float32(1.0)
-				for _, eachJump := range traceJumps {
-					if lin.jumpInfo == eachJump {
-						brighter = eighth
-						thicker = float32(10.0)
-					}
-				}
-
-				lin.jumpInfo.color.R += brighter
-				lin.jumpInfo.color.G += brighter
-				lin.jumpInfo.color.B += brighter
-				thickness := float32(0.0002) * thicker
-
-				if lin.jumpInfo.color.A < math.MaxUint8-55 {
-					thickness = 0.00010 * thicker
-				} else if lin.jumpInfo.color.A < math.MaxUint8-47 {
-					thickness = 0.00012 * thicker
+				thickness := float32(0.00010)
+				if lin.jumpInfo.color.A < math.MaxUint8-47 {
+					thickness = 0.00012
 				} else if lin.jumpInfo.color.A < math.MaxUint8-39 {
-					thickness = 0.00015 * thicker
+					thickness = 0.00015
 				}
-				jumpLines := gi3d.AddNewLines(sc, "Lines-"+strconv.Itoa(lin.jumpInfo.s1ID)+"-"+strconv.Itoa(lin.jumpInfo.s2ID),
-					[]mat32.Vec3{
-						{X: lin.from.x + offsets.x, Y: lin.from.y + offsets.y, Z: lin.from.z + offsets.z},
-						{X: lin.to.x + offsets.x, Y: lin.to.y + offsets.y, Z: lin.to.z + offsets.z},
-					},
-					mat32.Vec2{X: thickness, Y: thickness},
-					gi3d.OpenLines,
-				)
-				solidLine := gi3d.AddNewSolid(sc, sc, "Lines-"+strconv.Itoa(id), jumpLines.Name())
-				// solidLine.Pose.Pos.Set(lin.from.x - .5, lin.from.y - .5, lin.from.z + 8)
-				// lns.Mat.Color.SetUInt8(255, 255, 0, 128)
-				solidLine.Mat.Color = lin.jumpInfo.color
+				if lin.jumpInfo.s1ID != lin.jumpInfo.s2ID {
+					lin.lines = gi3d.AddNewLines(sc, "Lines-"+strconv.Itoa(lin.jumpInfo.s1ID)+"-"+strconv.Itoa(lin.jumpInfo.s2ID),
+						[]mat32.Vec3{
+							{X: lin.from.x + offsets.x, Y: lin.from.y + offsets.y, Z: lin.from.z + offsets.z},
+							{X: lin.to.x + offsets.x, Y: lin.to.y + offsets.y, Z: lin.to.z + offsets.z},
+						},
+						mat32.Vec2{X: thickness, Y: thickness},
+						gi3d.OpenLines,
+					)
+					solidLine := gi3d.AddNewSolid(sc, sc, "Lines-"+strconv.Itoa(id), lin.lines.Name())
+					// solidLine.Pose.Pos.Set(lin.from.x - .5, lin.from.y - .5, lin.from.z + 8)
+					// lns.Mat.Color.SetUInt8(255, 255, 0, 128)
+					solidLine.Mat.Color = lin.jumpInfo.color
+				}
 			}
 		}
 	}
-	print("Done")
 }
 
 func checkForJumps(stars []*star, star *star, id int) (result []*simpleLine) {
@@ -434,32 +461,27 @@ func checkForJumps(stars []*star, star *star, id int) (result []*simpleLine) {
 		}
 		jumpColor := checkFor1jump(star, innerStar)
 		if jumpColor.color.A > 0 {
-			newJump := &simpleLine{
-				from:     position{x: star.x, y: star.y, z: star.z},
-				to:       position{x: innerStar.x, y: innerStar.y, z: innerStar.z},
-				jumpInfo: jumpColor,
-			}
-			result = append(result, newJump)
+			// symmetric, so no copies
+			result = addIfNew(result, jumpColor)
 		}
 	}
-	closest := []*simpleLine{&noLine, &noLine}
-	if len(result) > 2 {
+	closest := []*simpleLine{&noLine, &noLine, &noLine}
+	if len(result) > 3 {
 		for _, nextSimpleLine := range result {
 			if nextSimpleLine.jumpInfo.distance < closest[0].jumpInfo.distance {
-				if closest[0].jumpInfo.distance < closest[1].jumpInfo.distance {
-					closest[1] = closest[0]
-				}
+				closest[2] = closest[1]
+				closest[1] = closest[0]
 				closest[0] = nextSimpleLine
-			} else if nextSimpleLine.jumpInfo.distance < result[1].jumpInfo.distance {
+			} else if nextSimpleLine.jumpInfo.distance < closest[1].jumpInfo.distance {
+				closest[2] = closest[1]
 				closest[1] = nextSimpleLine
+			} else if nextSimpleLine.jumpInfo.distance < closest[2].jumpInfo.distance {
+				closest[2] = nextSimpleLine
 			}
 		}
-		if closest[0].jumpInfo.parsecs > 3 || closest[1].jumpInfo.parsecs > 4 {
-			result = append(result, closest[0])
-		} else {
-			result = closest
-		}
+		result = closest
 	}
+
 	return
 }
 
@@ -468,7 +490,7 @@ func checkFor1jump(s1 *star, s2 *star) (result *jump) {
 	delta := int(jumpLength)
 	if delta < len(jumpColors) {
 		if s1.id != s2.id {
-			result = &jump{jumpColors[delta], delta, jumpLength, s1.id, s2.id}
+			result = &jump{jumpColors[delta], jumpColors[delta], delta, jumpLength, s1.id, s2.id}
 		} else {
 			result = &noJump
 		}
@@ -582,3 +604,39 @@ func showBigStar(star star, sc *gi3d.Scene) {
 	starSphere.Mat.Color.SetUInt8(star.brightColor.R, star.brightColor.G, star.brightColor.B, star.brightColor.A)
 }
 
+func addIfNew(soFar []*simpleLine, jump *jump) (result []*simpleLine) {
+	result = soFar
+	if jump.s1ID >= jump.s2ID {
+		return
+	}
+	already := false
+	for _, line := range result {
+		if (line.jumpInfo.s1ID == jump.s1ID &&
+			line.jumpInfo.s2ID == jump.s2ID) ||
+			(line.jumpInfo.s1ID == jump.s2ID &&
+				line.jumpInfo.s2ID == jump.s1ID) {
+			already = true
+			break
+		}
+	}
+	if !already {
+		nextLine := &simpleLine{
+			from:     position{x: stars[jump.s1ID].x, y: stars[jump.s1ID].y, z: stars[jump.s1ID].z},
+			to:       position{x: stars[jump.s2ID].x, y: stars[jump.s2ID].y, z: stars[jump.s2ID].z},
+			jumpInfo: jump,
+		}
+		result = append(result, nextLine)
+	}
+	return
+}
+
+func contains(soFar []int, next int) (yes bool) {
+	yes = false
+	for _, sID := range soFar {
+		if sID == next {
+			yes = true
+			break
+		}
+	}
+	return
+}

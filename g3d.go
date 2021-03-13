@@ -4,15 +4,13 @@ import (
 	"github.com/goki/gi/gi"
 	"github.com/goki/gi/gi3d"
 	"github.com/goki/gi/gimain"
-	"github.com/goki/gi/gist"
 	"github.com/goki/gi/units"
 	"github.com/goki/ki/ki"
-	"github.com/goki/mat32"
 )
 
 const (
-	width  = 1280
-	height = 1024
+	width  = 1440
+	height = 1280
 )
 
 func main() {
@@ -51,7 +49,7 @@ func mainRun() {
 	selection.win = win
 	selection.scene = sc
 	selection.viewPort = vp
-	selection.updateWorldLableText(0)
+	selection.updateWorldLableTextAndCamera(connectedStar)
 	appName := gi.AppName()
 	mainMenu := win.MainMenu
 	mainMenu.ConfigMenus([]string{appName, "File", "Edit", "Window"})
@@ -83,52 +81,6 @@ func getOuter(mfr ki.Ki) (outer *gi.Layout) {
 	return
 }
 
-type systemSelector struct {
-	currentSystem int
-	scene         *gi3d.Scene
-	viewPort      *gi.Viewport2D
-	win           *gi.Window
-	star          *star
-}
-
-var selection = systemSelector{
-	currentSystem: 0,
-	scene:         &gi3d.Scene{},
-	viewPort:      &gi.Viewport2D{},
-	star:          &star{},
-}
-const hdrText = `<p>Star %d </p>
-	<p><b>StarPort</b> %s</p>
-	<p><b>Size</b> %d  </p>
-	<p><b>Atmosphere</b> %s  </p>
-    <p><b>Size</b> %d  </p>
-    <p><b>HydroSize</b> %d  </p>
-	<p><b>Population</b> %d</p>
-    <p>%s</p>
-    <p><b>Law Level</b> %d</p>
-    <p><b>Tech Level</b> %d</p>
-    <p><b>Tech Description</b> %s</p>`
-
-func (s *systemSelector) updateWorldLableText(systemID int) (header string) {
-	s.scene.SetActiveStateUpdt(true)
-
-	s.star = stars[systemID]
-	header = worldFromStar(systemID).worldHeader
-	workingWorld.SystemDetails.Redrawable = true
-	workingWorld.worldHeader = header
-	workingWorld.SystemDetails.CurBgColor = gist.Color{R: 0, G: 0, B: 0, A: 255}
-	workingWorld.SystemDetails.SetText(header)
-	s.scene.Camera.Pose.Pos.Set(float32(stars[systemID].x), float32(stars[systemID].y), float32(stars[systemID].z + .5))
-	s.scene.Camera.LookAt(mat32.Vec3{
-		X: float32(stars[systemID].x),
-		Y: float32(stars[systemID].y),
-		Z: float32(stars[systemID].z),
-	}, mat32.Vec3Y) // defaults to looking at origin
-	s.scene.SetActiveStateUpdt(false)
-
-	return
-}
-
 func getInfo(mfr ki.Ki, win *gi.Window) (info *gi.Layout) {
 	info = gi.AddNewLayout(mfr, "info", gi.LayoutHoriz)
 	info.SetStretchMaxHeight()
@@ -136,7 +88,6 @@ func getInfo(mfr ki.Ki, win *gi.Window) (info *gi.Layout) {
 	inner.SetStretchMaxHeight()
 
 	putWorldHeader(info)
-	addJumpButtons()
 
 	return
 }
@@ -150,32 +101,62 @@ func addScene(info ki.Ki) (result *gi3d.Scene) {
 	sceneRow.SetStretchMax()
 
 	sceneView := gi3d.AddNewSceneView(sceneRow, "sceneView")
+	selection.sceneView = sceneView
 	sceneView.SetStretchMax()
 	sceneView.Config()
-	tbar := sceneView.Toolbar()
-	tbar.AddSeparator("select")
-	gi.AddNewLabel(tbar, "select", "Select:")
-	tbar.AddAction(gi.ActOpts{Icon: "wedge-left"}, sceneView.This(),
+	selection.toolBar = sceneView.Toolbar()
+
+	removeSel := selection.toolBar.ChildByName("selmode", 0)
+	if removeSel != nil {
+		selection.toolBar.DeleteChild(removeSel, true)
+	}
+	removeEdit := selection.toolBar.ChildByName("Edit", 0)
+	if removeEdit != nil {
+		selection.toolBar.DeleteChild(removeEdit, true)
+	}
+	removeEdit = selection.toolBar.ChildByName("Edit Scene", 0)
+	if removeEdit != nil {
+		selection.toolBar.DeleteChild(removeEdit, true)
+	}
+	gi.AddNewLabel(selection.toolBar, "select", "Select:")
+	selection.toolBar.AddAction(gi.ActOpts{Icon: "wedge-left"}, sceneView.This(),
 		func(recv, send ki.Ki, sig int64, data interface{}) {
-			selection.currentSystem--
-			if selection.currentSystem < 0 {
-				selection.currentSystem = len(stars) - 1
+			match := -1
+			for sID, next := range selection.choose() {
+				if selection.currentSystem == next.id {
+					match = sID
+					break
+				}
 			}
-			selection.updateWorldLableText(selection.currentSystem)
+			if match > -1 {
+				match--
+				if match < 0 {
+					match = len(selection.choose()) - 1
+				}
+			}
+			selection.currentSystem = selection.choose()[match].id
+			selection.updateWorldLableTextAndCamera(selection.currentSystem)
 		})
-	tbar.AddAction(gi.ActOpts{Icon: "wedge-right"}, sceneView.This(),
+	selection.toolBar.AddAction(gi.ActOpts{Icon: "wedge-right"}, sceneView.This(),
 		func(recv, send ki.Ki, sig int64, data interface{}) {
-			selection.currentSystem++
-			if selection.currentSystem > len(stars) - 1 {
-				selection.currentSystem = 0
+			match := -1
+			for sID, next := range selection.choose() {
+				if selection.currentSystem == next.id {
+					match = sID
+					break
+				}
 			}
-			selection.updateWorldLableText(selection.currentSystem)
+			if match > -1 {
+				match++
+				if match >= len(selection.choose()) {
+					match = 0
+				}
+			}
+			selection.currentSystem = selection.choose()[match].id
+			selection.updateWorldLableTextAndCamera(selection.currentSystem)
 		})
 	result = sceneView.Scene()
-	// sc.NoNav = true
-
-	// first, add lights, set camera
-	result.BgColor.SetUInt8(0, 0, 0, 255) // sky blue-ish
+	result.BgColor.SetUInt8(0, 0, 0, 255)
 	gi3d.AddNewAmbientLight(result, "ambient", 0.6, gi3d.DirectSun)
 
 	return
