@@ -103,13 +103,13 @@ func worldHash(fromStar *star) *rand.Rand {
 	return rand.New(rand.NewSource(int64(id.Sum64())))
 }
 
-func worldFromStar(fromStarID int) (newWorld *world) {
+func worldFr omStar(fromStarID int) (newWorld *world) {
 	random1s := worldHash(stars[fromStarID])
 
 	starPort := getStarPort(random1s)
 	size, sizeBase := getSize(random1s)
 	atmosphereDescription, atmosphereBase := getAtmosphere(random1s, sizeBase)
-	hydro, hydroBase := getHydro(random1s, sizeBase)
+	hydro, hydroBase := getHydro(random1s, atmosphereBase)
 	population, popBase := getPopulation(random1s)
 	lawLevel, lawBase := getLawLevel(random1s, popBase)
 	government, governmentBase := getGovernment(random1s, popBase)
@@ -232,8 +232,8 @@ func getAtmosphere(rand *rand.Rand, size int) (result atmosphereDetails, base in
 	return
 }
 
-func getHydro(rand *rand.Rand, size int) (percent int, base int) {
-	percent = 10 * (twoD6(rand) + size - 7)
+func getHydro(rand *rand.Rand, atmosphere int) (percent int, base int) {
+	percent = 10 * (twoD6(rand) + atmosphere - 7)
 	if percent < 0 {
 		percent = 0.0
 	} else if percent > 100 {

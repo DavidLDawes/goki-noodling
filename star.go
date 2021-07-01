@@ -80,7 +80,7 @@ type simpleLine struct {
 }
 
 const (
-	intensityStep = 8
+	intensityStep = 2
 	faster        = true
 	fastest       = false
 )
@@ -94,11 +94,11 @@ var (
 		0, 0, intensityStep, 2 * intensityStep, 3 * intensityStep, 4 * intensityStep, 5 * intensityStep,
 	}
 	jumpColors = []gist.Color{
-		gist.Color(color.RGBA{R: math.MaxUint8 - eighth, G: 0, B: 0, A: math.MaxUint8 - intensity[0]}),
-		gist.Color(color.RGBA{R: math.MaxUint8 - eighth, G: half + eighth - eighth, B: 0, A: math.MaxUint8 - intensity[1]}),
-		gist.Color(color.RGBA{R: math.MaxUint8 - eighth, G: math.MaxUint8 - eighth, B: 0, A: math.MaxUint8 - intensity[2]}),
-		gist.Color(color.RGBA{R: 0, G: math.MaxUint8 - eighth, B: 0, A: math.MaxUint8 - intensity[3]}),
-		gist.Color(color.RGBA{R: 0, G: 0, B: math.MaxUint8 - eighth, A: math.MaxUint8 - intensity[4]}),
+		gist.Color(color.RGBA{R: math.MaxUint8, G: 0, B: 0, A: math.MaxUint8 - intensity[0]}),
+		gist.Color(color.RGBA{R: math.MaxUint8, G: half + eighth - eighth, B: 0, A: math.MaxUint8 - intensity[1]}),
+		gist.Color(color.RGBA{R: math.MaxUint8, G: eighth, B: 0, A: math.MaxUint8 - intensity[2]}),
+		gist.Color(color.RGBA{R: 0, G: math.MaxUint8, B: 0, A: math.MaxUint8 - intensity[3]}),
+		gist.Color(color.RGBA{R: 0, G: 0, B: math.MaxUint8, A: math.MaxUint8 - intensity[4]}),
 		//gist.Color(color.RGBA{R: math.MaxUint8 - quarter, G: 0, B: math.MaxUint8 - quarter, A: math.MaxUint8 - intensity[5]}),//
 	}
 
@@ -110,6 +110,11 @@ var (
 	noLine = simpleLine{from: position{x: 0, y: 0, z: 0}, to: position{x: 0, y: 0, z: 0}, jumpInfo: &noJump, lines: &gi3d.Lines{}}
 
 	jumpsByStar = make(map[int][]*jump)
+	techByStar = make(map[int]int)
+	popByStar = make(map[int]int)
+	astmosphererByStar = make(map[int][]*string)
+	taintByStar = make(map[int]bool)
+	goodAirByStar = make(map[int]bool)
 
 	classO = classDetails{
 		class:       "O",
@@ -175,11 +180,83 @@ var (
 		pixels:      5,
 	}
 
+
+	// simply copied F
+	classD = classDetails{
+		class:       "D",
+		brightColor: color.RGBA{R: tween, G: tween, B: sevenEighths, A: opaque},
+		medColor:    color.RGBA{R: sevenEighths, G: sevenEighths, B: half, A: opaque},
+		dimColor:    color.RGBA{R: half, G: half, B: quarter / two, A: opaque},
+		odds:        .03,
+		fudge:       .012,
+		minMass:     1.04,
+		deltaMass:   .36,
+		minRadii:    1.15,
+		deltaRadii:  .25,
+		minLum:      1.5,
+		deltaLum:    3.5,
+		pixels:      5,
+	}
+
+
+	// simply copied F
+	classS = classDetails{
+		class:       "S",
+		brightColor: color.RGBA{R: tween, G: tween, B: sevenEighths, A: opaque},
+		medColor:    color.RGBA{R: sevenEighths, G: sevenEighths, B: half, A: opaque},
+		dimColor:    color.RGBA{R: half, G: half, B: quarter / two, A: opaque},
+		odds:        .03,
+		fudge:       .012,
+		minMass:     1.04,
+		deltaMass:   .36,
+		minRadii:    1.15,
+		deltaRadii:  .25,
+		minLum:      1.5,
+		deltaLum:    3.5,
+		pixels:      5,
+	}
+
+
+	// simply copied F
+	classs = classDetails{
+		class:       "S",
+		brightColor: color.RGBA{R: tween, G: tween, B: sevenEighths, A: opaque},
+		medColor:    color.RGBA{R: sevenEighths, G: sevenEighths, B: half, A: opaque},
+		dimColor:    color.RGBA{R: half, G: half, B: quarter / two, A: opaque},
+		odds:        .03,
+		fudge:       .012,
+		minMass:     1.04,
+		deltaMass:   .36,
+		minRadii:    1.15,
+		deltaRadii:  .25,
+		minLum:      1.5,
+		deltaLum:    3.5,
+		pixels:      5,
+	}
+
+
+	// simply copied F
+	class = classDetails{
+		class:       " ",
+		brightColor: color.RGBA{R: tween, G: tween, B: sevenEighths, A: opaque},
+		medColor:    color.RGBA{R: sevenEighths, G: sevenEighths, B: half, A: opaque},
+		dimColor:    color.RGBA{R: half, G: half, B: quarter / two, A: opaque},
+		odds:        .03,
+		fudge:       .012,
+		minMass:     1.04,
+		deltaMass:   .36,
+		minRadii:    1.15,
+		deltaRadii:  .25,
+		minLum:      1.5,
+		deltaLum:    3.5,
+		pixels:      5,
+	}
+
 	classG = classDetails{
 		class:       "G",
-		brightColor: color.RGBA{R: tween, G: tween, B: 0, A: opaque},
-		medColor:    color.RGBA{R: sevenEighths, G: sevenEighths, B: 0, A: opaque},
-		dimColor:    color.RGBA{R: half, G: half, B: 0, A: opaque},
+		brightColor: color.RGBA{R: tween, G: tween, B: tween/5, A: opaque},
+		medColor:    color.RGBA{R: sevenEighths, G: sevenEighths, B: sevenEighths/5, A: opaque},
+		dimColor:    color.RGBA{R: half, G: half, B: half/5, A: opaque},
 		odds:        .076,
 		fudge:       .01102,
 		minMass:     .8,
@@ -226,8 +303,15 @@ var (
 	starDetailsByClass = [7]classDetails{classO, classB, classA, classF, classG, classK, classM}
 	// classByZoom        = [11]int{7, 7, 7, 7, 7, 7, 6, 5, 4, 3, 2}
 )
+
+type positionDetail struct {
+	starposition position
+	starDetails  classDetails
+}
+
 var starPositionsDetails = []positionDetail {
 	{ starposition: position{x: 0.3000606633, y: 2.999141706, z: -17.95709916}, starDetails:classG},
+	{ starposition: position{x: 0.0, y: 0.0, z: 0.0}, starDetails:classG},
 	{ starposition: position{x: -1.002472935, y: -1.377180927, z: -9.864011411}, starDetails:class},
 	{ starposition: position{x: 3.096698006, y: 0.219086233, z: -17.34237086}, starDetails:classG},
 	{ starposition: position{x: -3.793333946, y: -1.63617278, z: -18.7477786}, starDetails:classG},
@@ -1167,9 +1251,9 @@ func getStarDetails() []*star {
 	stars := make([]*star, len(starPositionsDetails))
 	for i, positionDetails := range starPositionsDetails {
 		stars[i] = &star{}
-		stars[i].x = positionDetails.starposition.x
-		stars[i].y = positionDetails.starposition.y
-		stars[i].z = positionDetails.starposition.z
+		stars[i].x = positionDetails.starposition.x/10
+		stars[i].y = positionDetails.starposition.y/10
+		stars[i].z = positionDetails.starposition.z/10
 		stars[i].brightColor = positionDetails.starDetails.brightColor
 		stars[i].dimColor = positionDetails.starDetails.dimColor
 		stars[i].pixels = 5
@@ -1210,8 +1294,10 @@ func getHash(aSector sector) *rand.Rand {
 	return rand.New(rand.NewSource(int64(id.Sum64())))
 }
 
-func distance(s1 *star, s2 *star) float32 {
-	return math32.Sqrt((s1.x-s2.x)*(s1.x-s2.x) + (s1.y-s2.y)*(s1.y-s2.y) + (s1.z-s2.z)*(s1.z-s2.z))
+func distance(s1 *star, s2 *star) (result float32) {
+	result = math32.Sqrt((s1.x-s2.x)*(s1.x-s2.x) + (s1.y-s2.y)*(s1.y-s2.y) + (s1.z-s2.z)*(s1.z-s2.z))
+
+	return
 }
 
 var (
@@ -1230,17 +1316,11 @@ func renderStars(sc *gi3d.Scene) {
 	if !rendered {
 		stars = make([]*star, 0)
 		id := 0
-		for x := uint32(0); x < 2; x++ {
-			for y := uint32(0); y < 2; y++ {
-				for z := uint32(0); z < 2; z++ {
-					sector := sector{x: x, y: y, z: z}
-					for _, star := range getSectorDetails(sector) {
-						star.id = id
-						id++
-						stars = append(stars, star)
-					}
-				}
-			}
+		sector := sector{x: 0, y: 0, z: 0}
+		for _, star := range getSectorDetails(sector) {
+			star.id = id
+			id++
+			stars = append(stars, star)
 		}
 		if len(stars) > 0 {
 			sphereModel = &gi3d.Sphere{}
@@ -1382,19 +1462,25 @@ func checkForJumps(stars []*star, star *star, id int) (result []*simpleLine) {
 			result = addIfNew(result, jumpColor)
 		}
 	}
-	closest := []*simpleLine{&noLine, &noLine, &noLine}
-	if len(result) > 3 {
+	closest := []*simpleLine{&noLine, &noLine, &noLine, &noLine}
+	if len(result) > 4 {
 		for _, nextSimpleLine := range result {
 			if nextSimpleLine.jumpInfo.distance < closest[0].jumpInfo.distance {
+				closest[3] = closest[2]
 				closest[2] = closest[1]
 				closest[1] = closest[0]
 				closest[0] = nextSimpleLine
 			} else if nextSimpleLine.jumpInfo.distance < closest[1].jumpInfo.distance {
+				closest[3] = closest[2]
 				closest[2] = closest[1]
 				closest[1] = nextSimpleLine
 			} else if nextSimpleLine.jumpInfo.distance < closest[2].jumpInfo.distance {
+				closest[3] = closest[2]
 				closest[2] = nextSimpleLine
+			} else if nextSimpleLine.jumpInfo.distance < closest[3].jumpInfo.distance {
+				closest[3] = nextSimpleLine
 			}
+
 		}
 		result = closest
 	}
@@ -1404,6 +1490,9 @@ func checkForJumps(stars []*star, star *star, id int) (result []*simpleLine) {
 
 func checkFor1jump(s1 *star, s2 *star) (result *jump) {
 	jumpLength := distance(s1, s2) * 100 * parsecsPerLightYear
+	if jumpLength > 0.3 {
+		jumpLength = jumpLength * 2.0 /3.0
+	}
 	delta := int(jumpLength)
 	if delta < len(jumpColors) {
 		if s1.id != s2.id {
