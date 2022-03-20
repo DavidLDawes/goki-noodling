@@ -1,0 +1,440 @@
+Name	X	Y	Starport	Size	Atmosphere	Hydrospehere	Population	Government	Law	Tech	Bases	Remarks	Zone	Stars	Planets	Belts	Gas Giants
+Zeykiede	01	1	B	4	3	0	6	9	8	A	KM	De Na Ni Po		K9 V	6	1	3
+Rzhdioch	01	2	C	4	2	0	7	8	9	B		De Na Po		G8 V M1 V	6	0	3
+Ezhfrepl	01	3	B	5	6	3	7	6	4	B	KM	Ri O:0304 Chir0		M1 V M4 V	9	1	0
+Chantrel	01	4	C	5	6	6	5	7	7	A		Ni Ag		F1 V	5	2	0
+Gyomar	01	8	D	8	B	2	8	8	9	5		Fl (Tethmari)		A8 V	8	2	4
+Atson	01	11	B	3	1	0	6	9	8	8		Ni		K8 V	2	3	3
+Yiktor	01	14	C	6	B	6	4	8	7	A		Fl Ni		G4 V M4 V	3	2	3
+Xhosa	01	15	E	A	9	5	5	4	6	6		Lo Ni		M0 V	7	1	0
+Junction	01	22	D	5	5	0	4	4	1	4		De Ni Po		M2 V M3 V	1	1	0
+Uniqua	01	29	E	6	2	5	5	7	B	7		Ni		K9 V M9 V	5	1	0
+Garoo	01	30	A	2	0	0	8	C	B	B	N	Na Va Ph Pi Pz (Garoo)		M1 V M5 V	4	1	0
+Emape	01	33	A	5	6	4	6	2	2	B	IN	Ag Ni Pr Da	A	M0 V	2	0	3
+Raweh	01	39	B	4	3	0	4	1	2	D	IN	De Lo Po Da	A	G3 V M1 V	3	2	0
+Lothlorien	01	40	C	6	8	7	6	4	3	8		Lo Ga		K7 V	5	0	3
+Idrianzh	02	2.5	C	8	6	8	6	8	6	6		Ag Ni Ri		G5 V M3 V	8	0	1
+Prinx	02	12.5	C	4	3	6	6	3	5	7		Ni		A9 V K8 V	9	2	0
+Rushu	02	15.5	E	7	6	6	6	8	4	4		Ag Ni Ri VargW		G0 V M3 V	2	0	3
+Bael	02	18.5	B	2	0	0	4	7	6	A		Lo Ni Va		K2 V	6	1	2
+Stern-Stern	02	23.5	B	4	2	1	6	5	8	D	I	He Ni Po DaryW		M0 V M3 V	3	0	1
+886-945	02	30.5	D	8	3	3	1	0	0	3		Ni Lo Po		F8 V	7	0	4
+Saxe	02	31.5	D	A	A	5	6	4	3	8		Fl Ni		A2 V	1	1	0
+Andor	02	36.5	C	6	9	5	8	X	5	D		Ag An Pi Fo DroyW	R	F3 V	1	0	3
+Galadriel	02	40.5	D	7	5	4	5	4	5	8		Ni Pa (minor)		G2 V	4	2	4
+Rio	03	1	B	6	8	6	6	4	8	A	M	Ag Ni Ri		M0 V M1 V	2	0	1
+Zhdienshdo	03	3	A	3	1	1	7	9	B	D	K	Ic Na		M2 V M9 V	8	0	1
+Cronor	03	4	A	6	3	6	A	A	5	E	K	Hi Cp		F8 V	8	1	0
+Brefrie	03	7	B	4	3	3	7	C	A	B	KM	Na Po An		F7 V M3 V	8	1	0
+Mizan-fel	03	11	B	5	6	2	5	8	A	9	I	Ni		F3 V	7	2	3
+Nonym	03	21	B	4	3	3	8	5	A	C	IM	Na Po Ph		G0 V	9	2	3
+Laberv	03	25	B	5	5	4	5	2	5	B	IM	Ni Pa DaryW		G0 V	2	3	4
+Ektron	03	26	C	4	3	2	6	5	2	8	I	Na Ni Po Asla2 Dary8		M1 V	6	2	3
+Gothe	03	32	D	4	2	1	5	9	B	8	I	He Ni Po Da	A	F5 V	5	1	0
+Mirriam	03	33	A	9	9	9	9	A	6	C	NW	Ph Pi Pz	A	G6 V	1	1	4
+Candory	03	36	C	5	9	3	7	X	4	E		Ni An Fo DroyW	R	F6 V M3 V	4	2	0
+Wonderay	03	40	E	8	8	A	5	6	A	5		Ni Wa		M1 V M3 V	5	1	0
+Izhedriel	04	12.5	B	2	0	0	3	1	0	B	IKM	Lo Va Ni Droy5		M3 V M3 V	9	0	1
+Attica	04	14.5	C	4	0	0	5	4	6	9		Ni Va		K1 V M6 V	2	1	0
+Retinae	04	16.5	C	8	C	6	A	8	A	8		Fl Hi In Pz (Tashaki) RwZ		M1 V	1	1	0
+Zamine	04	21.5	C	8	9	7	9	7	7	C	I	Hi In Dary9 Asla0	A	M3 V	4	2	3
+Engrange	04	25.5	C	5	5	4	7	9	4	A		Ag Asla1 Dary8		M1 V M3 V	8	0	1
+Yelim	04	26.5	A	5	4	4	8	3	1	8	IM	Pa Ph Pi DaryW		G3 V M8 V	8	0	1
+Roget	04	27.5	B	5	6	6	7	7	7	9	I	Ag Ri Asla8 Dary2		F8 V M3 V	6	2	0
+Kardin	04	29.5	E	5	5	3	2	0	3	7		Lo Po An		F7 V	3	1	0
+Bularia	04	30.5	C	7	7	4	6	2	2	5		Ag Ni		K5 V M3 V	6	1	0
+Jone	04	33.5	B	7	9	2	8	8	5	B	N	He Pi Pz	A	G8 V M5 V	1	1	0
+Jinx	04	40.5	D	1	0	0	1	3	3	9		Lo Va Da	A	G3 IV D	1	0	2
+Whenge	05	3	B	6	4	8	7	4	3	A		Ag		F8 V	6	1	0
+Zhda	05	11	C	7	8	6	4	4	2	A		Lo Ni Ga		K2 V	1	1	2
+Niabritedl	05	12	D	5	9	6	5	1	0	6		Ni Pa		K8 V	6	0	5
+Faisal	05	18	D	5	4	5	5	5	6	5		Ag Ni		K9 V M7 V	3	1	0
+Rore	05	26	D	7	6	5	6	5	8	3		Ag Ni Ga Ri DaryW		F4 V M2 V	2	0	3
+Mire	05	27	A	6	6	5	A	9	5	E	M	Hi Ga Cx Dary8 Asla1		K6 V	3	1	0
+Condaria	05	28	D	5	4	7	8	9	8	6	I	Ag Pi Pz		K3 V M0 V	2	0	1
+Dorannia	05	30	E	4	2	1	5	8	A	7		He Ni Po		K4 V	3	1	0
+Ucella	05	32	D	5	7	4	6	5	4	8		Ag Ni Chir2		F2 V M2 V	8	1	0
+Penelope	05	33	C	5	6	0	6	4	2	8	I	De Ni Ri		F6 V M2 V	4	2	3
+Karin	05	34	A	7	6	7	7	8	9	E	NS	Ag Ga Ri Pz Mr	A	G7 V	8	1	0
+Wonstar	05	38	B	5	5	5	7	4	1	9	N	Ag Pz		M0 V	9	1	0
+Froin	05	39	B	5	3	5	5	4	3	A	I	Lo RsZ		M2 V M7 V	7	0	1
+Enlas-du	06	1.5	C	9	7	5	8	7	6	6	K	Varg3	A	F1 V	3	2	3
+Algebaster	06	5.5	C	6	6	5	7	5	8	A		Ag Ni Ri		M0 V M1 V	4	1	0
+Rasatt	06	7.5	C	8	8	3	6	0	1	9		Ni		F0 V	9	1	0
+Ninjar	06	8.5	A	3	1	1	7	6	6	D	KM	Ic Na O:0304		A4 V	4	1	0
+Shiazhzdepr	06	10.5	B	7	5	6	7	9	9	B	KM	Ag		F4 V M0 V	1	1	1
+Fiashzaikriq	06	13.5	B	8	6	9	6	5	4	D	I	Ni Ri		G8 V M5 V	5	0	1
+Shiadlia	06	14.5	A	5	5	4	8	1	8	9	IKM	Cp (Sheol)		G6 V	2	0	4
+Dekalb	06	18.5	D	A	8	A	7	9	9	7		Oc Ri		M1 V	8	2	0
+Winston	06	20.5	D	8	8	7	5	7	3	6	I	Ag Ni		K5 V M9 V	8	0	1
+Terant 340	06	22.5	C	5	4	0	5	A	7	B		De He Ni Po DaryW		G0 V M5 V	9	2	3
+Jacent	06	24.5	A	4	3	3	7	4	4	F		Na Po DaryW		M0 V	9	1	0
+494-908	06	25.5	X	8	9	3	0	0	0	0		Ba Fo Re	R	M1 V	0	1	0
+Daryen	06	27.5	A	4	6	3	9	5	5	G	N	Hi An Pr (Daryen)8 Asla0		G1 V D	3	2	5
+Gohature	06	32.5	B	7	5	4	7	6	6	7	IS	Ag O:0732		F8 V	7	2	3
+Quhaiathat	06	37.5	C	3	1	4	7	9	B	B		Ic Pi Pz	A	K8 V	4	1	0
+Lakou	06	38.5	D	7	7	9	4	5	4	8	I	Ni Da	A	M2 V	8	0	1
+Indo	07	3	X	4	3	4	7	6	6	7	K	O:0704		F6 V	3	2	0
+Nerewhon	07	4	D	7	3	8	4	7	5	9		Lo Ni		K5 V	8	2	0
+Sachebr	07	5	A	8	8	6	8	6	5	C	K	Ri O:0304		G2 V	1	2	1
+Stave	07	10	E	7	6	6	7	A	8	2		Ag (Obeyery)		K9 V M2 V	8	0	1
+Piedradplozh	07	12	B	5	9	2	3	2	0	A	IKM	Lo Hi		K5 V M8 V	8	0	2
+Thanber	07	17	A	5	4	3	7	5	5	C		Po		M0 V M1 V	1	1	0
+Entrope	07	20	C	4	3	6	A	A	A	D	I	Hi		G6 V M1 V	2	1	0
+Torment	07	21	X	4	3	3	2	6	8	6		Lo Po Fo DaryW Px	R	M0 V	9	2	0
+Trifuge	07	23	C	5	4	6	5	5	6	C	I	Ag Ni (Dphone) Dary9		F0 V	5	1	0
+Nosea	07	24	A	4	3	2	6	B	B	F	IN	Na Ni Po Da DaryW		M2 V	9	2	0
+Zburne	07	27	C	5	4	0	2	1	3	B	IM	De He Lo Po DaryW		M2 V	7	3	4
+Ator	07	29	C	4	2	6	3	5	8	9	I	Lo An		F7 V M2 V	5	2	1
+Ralhe	07	31	D	4	2	4	5	7	5	9	I	Ni		M2 V M3 V	7	0	1
+Iderati	07	32	A	8	8	7	7	9	8	C	IN	Ag Ga Ri Cp		G9 V	4	0	1
+Tondoul	07	39	D	5	1	3	6	A	7	6	I	Ic Na Ni		K8 V M1 V	9	0	1
+Narval	08	5.5	B	5	2	5	6	8	8	8	KM	Ni	A	G4 V M6 V	6	0	3
+Plaven	08	7.5	D	8	4	5	5	0	0	8	N	Ni Ag RwZ		G8 V M7 V	9	1	0
+Quar	08	8.5	A	5	3	2	7	2	0	B	IN	Na Po	A	M2 V	4	0	1
+Frond	08	10.5	E	9	C	3	2	0	0	8		Fl Lo Ni		F8 V	1	0	3
+Anselhome	08	20.5	C	3	1	0	5	4	7	A	I	Ni		M0 V M1 V	9	0	1
+Cunnonic	08	22.5	C	6	5	7	7	5	8	8	I	Ag Ni Ga Asla0 Dary9		K0 V	2	0	2
+Debarre	08	30.5	B	8	5	4	5	6	4	7		Lo	A	M2 V	1	2	2
+Prince Edward	08	34.5	C	8	8	8	6	5	3	8	IS	Ni Pa Da	A	M3 V M7 V	1	1	0
+Ochecate	08	37.5	D	7	4	7	5	6	9	9	I	Ag Ni O:1040		G8 V M8 V	4	1	0
+Mewey	08	38.5	C	7	8	6	7	9	9	7	I	Ag Ga Ri (Mewey)		K3 V M3 V	9	0	1
+Retief	08	40.5	D	1	0	0	4	5	3	A		Lo Va		M0 V	1	2	1
+Condyole	09	1	D	7	A	1	6	6	4	7		Fl Ni (Vexx) Varg4	A	F8 V	2	2	3
+Puparkin	09	2	C	7	B	3	5	5	3	A		Fl Lo Varg8	A	K8 V M4 V	3	0	2
+Chachtinch	09	4	B	7	6	6	8	6	6	B	IKM	Ri		M2 V	2	2	4
+Gougheste	09	9	B	5	7	2	5	1	0	A	I	Ni		K2 V	4	2	0
+Caloran	09	11	C	7	9	6	6	4	6	5	I	Ag Ni		G2 V M4 V	7	1	0
+Ring of Fire	09	12	D	2	0	1	3	0	0	9	I	Ic Lo Va Ni		F7 V	8	2	0
+Quare	09	15	B	2	0	0	5	4	5	9		Ni Va		M3 V	4	0	4
+Zeta 2	09	19	X	6	B	0	0	0	0	0	I	Ba He Fo (Viji) Re	R	M0 V	0	2	0
+Hrunting	09	21	A	5	6	3	7	5	6	A	I	Ri		M2 V	4	1	3
+Tizon	09	22	A	5	8	6	8	8	5	B	I	Ri Pa Ph		K2 IV M3 V	4	2	3
+Narsil	09	27	A	5	7	4	A	5	7	D	IM	Hi In Cp	A	G6 IV M0 V	4	2	4
+Flammarion	09	30	A	6	2	3	6	3	4	D	INW	Ni Po		F8 V	2	1	0
+Asteltine	09	31	C	7	A	7	4	0	2	9		Fl Ni		K7 V M3 V	1	1	0
+Inchin	09	38	D	4	2	0	3	5	A	A		De He Lo Po		F0 V	9	2	3
+Singer	09	40	D	5	5	3	7	7	4	7		Po		M2 V M2 V	8	0	1
+Esalin	10	4.5	B	5	6	5	8	6	6	A	IS	Ag RwZ	A	F3 V M2 V	2	2	3
+Ruby	10	5.5	A	4	0	0	4	4	5	C	IS	Lo Ni Va		M1 V M3 V	4	0	1
+Emerald	10	6.5	A	7	6	6	5	5	5	B	IS	Ag Ni		M1 V	9	3	4
+Zenopit	10	10.5	D	4	3	0	5	9	8	7	I	Ag Ni RwZ		M3 V	7	2	2
+Arden	10	11.5	A	5	5	4	A	C	B	B		Hi Pz		G4 V M5 V	1	1	0
+Choleosti	10	18.5	B	2	0	0	3	2	2	A	I	Lo Va		K9 V M4 V	5	0	1
+Margesi	10	20.5	C	5	7	5	7	8	7	7		Ag Ni Da	A	K4 V M7 V	2	1	0
+Colada	10	22.5	B	5	6	4	6	8	5	B	IM	Ag Ni Ri	A	K2 V M8 V	3	1	1
+Anduril	10	26.5	A	9	8	5	8	5	5	D	M	Ri Pa Ph	A	F2 V	5	2	2
+Shvreeyiyi	10	31.5	D	5	3	2	5	E	2	2	S	Ba Po (Shriekers)	A	G5 V M9 V	6	1	0
+Avastan	10	37.5	C	4	3	3	5	4	3	B		Ni Po		M3 V	9	2	4
+Kwai Qing	10	40.5	C	5	0	3	7	5	8	B		Ic Na Va Pi		K3 V	6	2	0
+Dietevriabr	11	2	B	5	6	6	A	9	9	A	I	Hi Varg2	A	M2 V	3	1	4
+Iefi	11	3	B	6	7	2	8	9	9	A	IKM	Hi In		K8 V	2	0	1
+Jewell	11	6	A	7	7	7	9	9	9	F	NS	Hi In Cp RwZ		G7 V	1	2	3
+Zircon	11	10	C	7	9	2	6	6	8	8	IN	Ni O:1011		F0 V	8	2	4
+Frenzie	11	16	A	2	0	0	4	3	6	E	N	Ni Va Cp		M3 III M2 V	2	1	0
+Tanoose	11	18	A	9	7	8	9	8	7	B	IS	Pa Ph Pi O:1119		M3 V	5	1	2
+Vilis	11	19	A	5	9	3	A	4	3	B		Hi In		G5 V M8 V	1	2	0
+Mjolnir	11	21	B	5	3	0	5	6	6	8		De Ni Po		A5 V G0 V	8	2	2
+Joyeuse	11	23	C	5	6	4	7	6	A	A	IM	Ag Ri Pz	A	M3 V M9 V	6	0	1
+Orcrist	11	26	B	8	A	6	7	3	3	C	KM	Fl Lk	A	K7 V M7 V	8	0	1
+Enos	11	30	C	3	5	0	6	A	A	7	M	De Ni Po Da		M1 V	1	1	9
+Faldor	11	31	E	5	9	3	6	A	7	5		Ni (Otarri)		M2 V	7	2	0
+Bowman	11	32	C	0	0	0	4	2	1	B	S	As Lo Va		M0 V	2	0	1
+Squallia	11	33	C	4	3	8	6	7	9	9		Ni		F0 V	7	2	0
+Tarsus	11	38	B	5	8	4	6	2	0	B		Ag Ni Ri		K9 V	4	0	2
+Ainzaia	12	1.5	D	4	1	0	6	4	4	6	I	Na Ni Varg1	A	K2 V M3 V	4	1	2
+Mongo	12	4.5	A	5	6	8	6	8	6	B	INS	Ag Ni Ri RwZ		M6 III M0 V	8	0	3
+Utoland	12	9.5	C	5	7	3	4	6	4	7	I	Lo Ni O:1011		M0 V	6	1	0
+Pequan	12	10.5	E	5	6	5	6	6	9	4	I	Ag Ni Ri		K5 V	9	1	0
+Digitis	12	12.5	E	5	3	6	7	8	A	6	I	Ni		M3 V	1	2	0
+Edna	12	13.5	E	4	0	0	2	2	0	9	I	Lo Va Da		K6 V M0 V	6	0	1
+Port Anselm	12	14.5	C	9	5	5	3	0	0	8	I	Lo Ni RwZ		F1 V M2 V	2	1	0
+Stellatio	12	16.5	D	5	A	4	4	2	0	8		Fl Ni		M3 V	7	1	0
+Arkadia	12	17.5	C	5	4	6	9	B	C	9		Pa Ph Pi		G8 V	1	0	2
+Gungnir	12	21.5	B	5	4	4	7	8	8	9	M	Ag Pi		G3 IV M4 V	7	3	2
+Gram	12	23.5	A	8	9	5	9	5	7	C	IN	Hi In Cx	A	F2 V M2 V	8	0	3
+Excalibur	12	25.5	B	4	2	4	7	5	5	C	IM	Pi	A	K5 V	7	0	2
+Walston	12	32.5	C	5	4	4	3	3	8	A	S	Lo Varg8		M2 V	6	0	2
+Flexos	12	33.5	E	5	A	1	4	2	2	7		Fl He Ni		M1 V M2 V	8	1	0
+Collace	12	37.5	A	6	2	8	9	4	3	E	IS	Hi In		F1 V M3 V	2	0	1
+Pavabid	12	38.5	C	6	6	7	8	D	8	6		Ga Ri Pa Ph Pz	A	K7 V	9	0	1
+Nakege	13	5	D	5	9	1	4	1	4	6	I	Lo Ni RwZ	A	K2 V M0 V	1	0	1
+Lysen	13	7	B	5	9	2	6	7	7	B	IS	Ni RwZ		M3 V	8	2	3
+Tremous Dex	13	11	B	5	1	1	5	7	7	C	N	Ic Ni		K8 V M5 V	4	0	1
+Mirriam	13	15	D	5	7	2	4	6	4	B	N	He Lo		F5 V	5	1	0
+Saurus	13	20	D	8	8	8	6	8	8	7		Ag Ni Pr (Saurians)		G8 V M1 V	1	2	0
+Tyrfing	13	24	B	6	3	7	8	3	5	A	I			M2 V	1	0	1
+Sacnoth	13	25	A	7	7	5	A	5	9	D	IN	Hi In Cp	A	F9 V M3 V	2	0	1
+Caladbolg	13	29	A	5	6	5	8	7	6	A	IN	Ag Ri		F7 V M0 V M4 V	1	1	0
+Datrillian	13	31	E	4	2	7	6	3	3	9		Ni		M1 V	9	0	1
+Nirton	13	32	X	5	0	0	0	0	0	0		Ba Va Fo	R	M0 V	0	1	1
+Judice	13	37	D	9	B	2	2	1	0	7	I	Ba Fl He RsT		M3 V	4	2	1
+Trexalon	13	39	B	5	6	1	8	5	1	B		Ri Ph	A	K8 V	8	2	3
+Motmos	13	40	B	6	8	4	7	8	B	9	N	Ag Ni Ri		M2 V M2 V	1	1	0
+Tlaqril	14	1.5	B	6	3	8	7	8	8	8	I	(Chokari)3 Dolp1 Varg2	A	K0 V	3	1	0
+Zhdedlefi	14	2.5	A	2	0	0	4	0	0	C	IKM	Lo Ni Va		M3 III M0 V	7	1	5
+Rangent	14	11.5	D	6	7	A	6	1	2	8		Ni Wa		K8 V	7	0	3
+Denotam	14	13.5	B	7	3	9	5	7	3	C	N	Ni		M2 V	6	2	4
+Ficant	14	17.5	C	5	6	7	4	5	5	7		Lo		M0 V M1 V	3	1	0
+Beater	14	24.5	A	6	8	5	6	8	6	D		Ag Ni Ga Ri		K4 V	9	1	0
+Gunn	14	29.5	E	5	4	4	0	0	0	0		Lo Da	A	M3 V	6	0	2
+Caliburn	14	30.5	E	0	0	0	6	1	4	C	I	As Ni Va		M2 V	3	2	4
+Noctocol	14	33.5	C	7	A	5	8	4	7	8		Fl		F5 V M2 V	2	0	2
+Tarkine	14	34.5	C	5	6	6	6	6	2	9	S	Ag Ni Ri Da O:1435	A	M0 V M2 V	8	1	0
+Dallia	14	35.5	B	8	8	5	8	8	3	B	I	Ga Ri Pa Ph		F2 V	8	1	0
+Talos	14	36.5	C	4	3	3	6	4	3	A	I	Ni Po		F9 V M1 V	1	2	0
+Ijiwa Mines	15	10	D	7	2	2	2	0	0	8	I	Lo Ni Po		M3 V M8 V	3	0	1
+Tionale	15	11	C	6	7	4	3	2	1	9		Lo Da (minor)		M2 V M5 V	3	1	0
+Calit	15	15	C	4	3	4	8	8	7	8		Ph		K9 V M1 V	7	0	1
+Asgard	15	19	X	5	4	3	7	C	7	5		Po Pi Fo	A	F5 V M1 V	7	2	0
+Tavonni	15	20	B	5	6	7	6	4	2	D	S	Ba		G6 V	4	3	4
+Dyrnwyn	15	22	B	9	5	8	8	1	8	B	N	Pa Ph	A	K4 V M8 V	8	0	1
+Durendal	15	23	B	6	8	7	6	4	7	C		Ag Ga Ri	A	M1 V	7	1	4
+Hofud	15	24	B	6	6	6	8	5	5	B	M	Ga Ri Pa Ph		G6 V M9 V	1	0	1
+Sting	15	25	B	6	4	5	8	8	7	B	M	Ag Pi		M0 V	4	0	2
+Biter	15	26	B	3	5	4	6	2	6	C		Ag Ni		G7 V M1 V	5	0	1
+Halifax	15	29	C	6	5	5	5	5	7	A	S	Ba Ga Re		K8 V	1	2	4
+Dawnworld	15	31	D	8	8	5	1	6	0	A	I	Ba Ga		F8 V M2 V	6	2	5
+Elixabeth	15	32	B	4	2	6	4	6	7	C	IN	Ni O:1435		M1 V M5 V	4	0	1
+Forine	15	33	C	3	1	2	9	B	8	B	I	Hi Ic In Na		G9 V	8	1	0
+Mertactor	15	37	B	5	6	2	7	3	2	B	IS	Ri Asla1		G1 V	1	1	0
+Louzy	16	4.5	C	4	2	2	A	7	8	8	I	Hi In Na Po		M2 V	2	1	0
+Grant	16	7.5	X	6	6	4	1	0	0	3		Lo Ni RwZ	R	K6 V	2	2	2
+Phlume	16	11.5	C	8	8	7	6	2	5	8		Ag Ni Ga Ri	A	G5 V M8 V	9	1	0
+Brace	16	26.5	E	5	2	9	0	0	0	0		Ba Re		F0 V	0	1	4
+Brunswick	16	27.5	E	2	0	1	0	0	0	0		Ba Ic Va Re		M3 V	0	1	0
+Wisconsin	16	28.5	C	5	6	8	6	4	5	A	N	Ba Re		F4 V	3	0	1
+Talchek	16	31.5	C	7	B	1	4	6	2	6		Fl He Ni Da O:1532	A	K8 V M5 V	7	0	1
+Milagro	16	32.5	C	3	1	1	8	8	A	9		Ic Na Pi		M2 V	1	2	0
+Pagaton	16	34.5	C	7	6	9	8	7	3	6		Ri Ph		F0 V	9	1	3
+Binges	16	35.5	A	5	0	0	2	3	1	B		Lo Va Droy4		M0 V	9	2	0
+Mille Falcs	16	37.5	A	9	A	2	4	8	A	E	INS	Fl He Ni Mr Asla0		M2 V	5	0	1
+Efate	17	5	A	6	4	6	A	3	0	E	NW	Hi An		K4 V	1	0	0
+Alell	17	6	B	5	6	7	8	9	C	A		Ri		M1 V M7 V	8	1	0
+Extolay	17	11	B	5	5	5	8	9	A	A	N	Pa Ph RwZ		M2 V M4 V	2	1	0
+Lanth	17	19	A	8	7	9	6	3	1	D	NS	Ni Cp		F5 IV M1 V	4	1	0
+Arba	17	21	B	2	0	0	2	6	0	C		Lo Va		M2 V	6	1	0
+Wardn	17	27	B	7	5	6	5	8	6	C	S	Ni Ga Pa		K2 V	1	0	2
+Olympia	17	28	C	4	2	8	3	4	2	9		Lo		M3 V	3	2	0
+Smoug	17	29	B	5	4	0	8	8	A	B		De He Po Pi		M1 V M7 V	2	0	2
+DeGrote	17	31	A	4	0	0	4	1	5	E		Ni Va		F8 V	7	2	4
+Lydia	17	33	E	3	1	0	4	3	0	7		Ni		M4 III M0 V	6	0	2
+Melior	17	36	C	5	4	0	4	7	7	8		De He Ni Po Da Jonk5		G3 V	9	2	4
+Egypt	17	37	B	A	C	6	5	6	7	A	N	Fl Ni Mr		F8 V	4	2	1
+Aiaoheah	17	39	C	8	6	A	6	N	9	9	I	Ni Wa AslaW		K9 V	4	0	1
+Yres	18	2.5	B	A	C	6	7	7	3	8	S	Fl		G5 V	6	3	5
+Menorb	18	3.5	C	6	5	2	9	9	8	8		Hi Po		K2 V	3	1	0
+Uakye	18	5.5	B	4	3	9	5	9	8	D		Ni		M3 V	6	2	0
+Whanga	18	6.5	E	6	7	6	3	2	6	A		Lo Ni		G1 V M1 V	7	2	4
+Knorbes	18	7.5	E	8	8	8	8	8	7	4		Ri An		G3 V	1	3	4
+Forboldn	18	8.5	D	8	9	3	6	1	4	5		Ni		G0 V	6	1	2
+Ruie	18	9.5	C	7	7	6	9	7	7	8		Hi In (Daccamites)	A	G5 V	9	0	1
+Jenghe	18	10.5	C	7	9	9	6	6	3	A	S	Ni O:1910		M0 V	5	2	3
+Dinom	18	11.5	D	3	0	0	5	3	5	B		Ni Va Sa		A4 V	4	0	1
+Ghandi	18	15.5	A	3	1	1	5	6	0	C	N	Ic Ni		F8 V M3 V	7	0	3
+Victoria	18	17.5	D	6	D	7	7	7	2	3		An Fo	R	K6 V	3	1	2
+Rabwhar	18	22.5	D	5	4	4	8	B	A	6	S	Pa Ph Pi Pz	A	K5 V	4	1	3
+Adabicci	18	24.5	A	5	7	1	8	9	B	D	N	He Ph Pi Pz	A	K8 V M8 V	2	0	1
+Zaibon	18	25.5	B	0	0	0	5	4	4	A		As Ni Va		M6 III M3 V	1	0	2
+Tenalphi	18	26.5	A	7	7	4	7	2	2	F		Ag An Pi		F7 V	4	1	0
+Callia	18	36.5	C	5	5	0	9	5	2	7		De Po Ph		M3 V	2	1	0
+Pixie	19	3	A	1	0	0	2	0	3	D	N	Lo Va An Ni		K1 V M0 V	8	0	1
+Boughene	19	4	A	8	B	3	5	3	1	D	S	Fl Ni An		M1 V	9	0	1
+Hefry	19	9	C	2	0	0	4	2	3	8	S	Ni Va Lo		K6 II M2 V	3	2	0
+Regina	19	10	A	7	8	8	8	9	9	D	NS	Ri An Cp (Amindii)2 Varg0 Asla0 Sa		F7 V BD M3 V	1	0	3
+Dinomn	19	12	B	6	7	4	6	3	2	9	S	Ag Ni		G8 V	4	0	4
+Ylaven	19	16	D	5	8	7	6	4	6	6		Ag Ni Pr Fo		F9 V	2	2	2
+Sonthert	19	18	D	6	2	6	6	A	B	7		Ni Da	R	K6 V M0 V	7	1	4
+D'Ganzio	19	20	A	4	2	0	6	1	0	E	N	De He Ni Po		M0 V M3 V	1	1	2
+Ianic	19	24	C	5	6	0	6	9	7	8		De Ni Ri		M3 V M7 V	6	2	4
+Spirelle	19	27	B	7	6	6	9	7	6	C	S	Ga Ri Pa Ph Droy1	A	G7 V	3	1	5
+Mithras	19	32	C	8	B	5	5	4	6	6		Fl Ni Px		M2 III M0 V	4	0	2
+Weiss	19	34	A	6	2	6	4	6	4	C		Ni Da O:2036	A	M1 V	2	0	3
+Windsor	19	35	C	7	8	3	6	3	4	A		Ni Pr Asla1		K9 V M0 V	2	1	0
+Overnale	19	37	A	5	5	4	6	7	A	C		Ag Ni Asla2		G3 V	6	2	3
+New Rome	19	38	B	8	3	7	8	6	6	B	N	O:2036		F8 V M0 V	8	0	4
+Hwealaitlau	19	39	C	5	7	3	7	M	5	3		Ni (Crawni) AslaW	A	G7 V	2	2	3
+Feri	20	5.5	B	5	8	4	8	7	9	B	S	Ri		G4 V M3 V	7	2	0
+Roup	20	7.5	C	7	7	A	9	A	9	7	S	Hi In Wa		F9 V	2	2	3
+Wypoc	20	11.5	E	9	C	4	6	8	7	9		Fl Ni Da		M3 V	3	2	2
+Derchon	20	24.5	C	5	1	2	8	A	9	9	S	Ic Na Pi		M0 V M7 V	1	0	1
+Aki	20	35.5	A	5	4	3	9	A	C	C		Hi In Po Pz Asla0		G6 V M2 V	4	1	4
+Glisten	20	36.5	A	0	0	0	A	8	6	F	NS	As Hi In Na Va Cp		K9 V	5	1	1
+Trane	20	38.5	C	6	3	9	4	2	2	C		Ni An		F4 V M3 V	9	0	4
+Pscias	21	6	X	5	5	5	5	2	3	2		Ni Ag	R	K5 V	8	0	1
+Yori	21	10	C	5	6	0	8	5	7	D		De Ri An (Zhurphani)6 RsB		F1 V	1	1	3
+Djinni	21	11	X	5	5	9	0	0	0	0		Ba Fo	R	K5 V	0	2	2
+Rech	21	12	C	9	9	5	7	A	A	7		Ag Pi Pz		M0 V	7	0	1
+Lunion	21	24	A	9	9	5	A	8	4	F	NS	Hi In Cp		G5 V	2	1	0
+Shirene	21	25	B	9	8	4	6	4	4	C	S	Ag Ni Pr Da	A	G4 V M1 V M1 V	4	2	3
+Penkwhar	21	28	X	9	7	8	3	1	0	3		Lo Da	R	M0 V	4	2	0
+Harvosette	21	29	C	4	3	0	8	4	7	A		De Na Po		M0 V M5 V	1	1	0
+Centry	21	32	E	4	2	2	4	4	7	8		He Ni Po		K3 V	4	2	0
+Caledonia	21	34	C	5	4	1	6	3	6	8		He Ni Po		M4 III M0 V	8	1	0
+Tailealres	21	37	D	5	8	5	7	L	B	5		Ag Ni Ri AslaW		G3 V M3 V	8	2	1
+Horosho	21	38	B	4	3	7	9	A	6	B	S	Ph		F4 V	1	2	0
+Romar	21	40	A	5	5	0	5	7	6	D	NS	De Ni Po Asla7		K2 V M3 V	2	1	2
+Dentus	22	1.5	C	9	7	9	6	0	0	B	NS	Ni		M2 V	2	2	0
+Kinorb	22	2.5	A	6	6	3	6	5	9	9	S	Ni Ri		G7 V	8	2	2
+Beck's World	22	4.5	D	8	8	3	4	9	D	5		Ni An Da		K0 V M2 V	9	0	1
+Enope	22	5.5	C	4	1	1	9	8	8	7		Hi Ic In Na		K6 V M5 V	7	0	0
+Wochiers	22	7.5	E	A	C	2	8	C	C	A		Fl He Ph Pz		F0 V	8	0	3
+K'Kirka	22	12.5	C	A	A	5	3	4	5	9		Fl Lo		M2 V	6	0	2
+Quopist	22	15.5	B	5	5	1	6	7	9	B		Ni Po Da	A	M3 V	8	2	1
+Carse	22	24.5	C	5	6	3	3	2	5	A		Lo		M3 V M6 V	8	0	1
+Persephone	22	28.5	A	7	7	5	9	3	3	C	W	Pa Ph Pi		M2 V	1	2	2
+Marastan	22	31.5	B	8	6	8	7	9	4	9		Ag Ri Pz Re K'kr0		K7 V	9	2	4
+Crout	22	32.5	C	4	3	5	9	C	A	8		Hi Pz		M7 III M2 V	4	1	4
+Tirem	22	33.5	C	7	B	5	A	8	5	C		Fl Hi In		K5 V	2	2	1
+Inthe	22	34.5	C	1	0	0	5	9	8	C		Ni Va		K3 V	2	2	4
+Tsarina	22	36.5	D	4	2	0	6	3	6	7		De He Na Ni Po	A	M2 V M2 V	6	0	1
+Ftaokhaorlyu	22	37.5	C	7	9	5	3	K	4	A	S	Lo Da AslaW	A	F8 V	8	1	0
+Yorbund	23	3	C	7	C	6	5	0	3	8		Fl Ni		M3 V	3	2	0
+Shionthy	23	6	C	0	0	0	7	4	2	9		As Na Va An Pi Fo		F6 V	8	1	4
+Algine	23	8	X	7	6	6	9	7	7	4		Hi Ga Pr Fo	R	G9 V	9	2	3
+Yurst	23	9	E	7	B	4	6	4	3	6		Fl Ni (Ursty)		K9 V	7	2	4
+Treece	23	11	D	4	3	2	8	A	6	8		Na Po Ph O:2410		M1 V	8	1	0
+Echiste	23	13	C	5	3	A	4	3	4	C		Lo Wa		G4 V	5	2	0
+Pirema	23	14	C	6	9	1	1	4	2	7		He Lo		M2 V	9	0	2
+Rhise	23	17	C	1	0	0	6	4	4	9		Ni Va Da	A	K7 V	2	1	0
+Ivendo	23	19	A	4	2	4	6	5	9	C	NS	Ni		A9 V	4	1	2
+Quiru	23	21	B	5	6	5	3	6	A	9		Lo		M3 V	7	2	3
+Gorram	23	22	E	5	5	4	2	2	0	7		Lo Fo	A	K8 V M6 V	8	0	1
+Resten	23	23	B	3	1	0	1	0	0	B	S	Lo		K5 V M8 V	6	0	1
+Capon	23	24	A	7	4	7	7	4	8	B	N	Ag Pi		F9 V	8	1	0
+Sharrip	23	25	C	5	7	5	1	0	1	B		Lo		K5 V	4	0	3
+Strouden	23	27	A	7	4	5	A	8	8	F	N	Hi In		G5 V M4 V	1	2	0
+Bicornn	23	31	E	5	6	3	5	7	6	5		Ni Pr Asla2		F3 V M3 V	3	1	0
+Ffudn	23	34	A	4	1	4	8	9	D	D		Ic Ph Pi Pz		M0 V	1	0	4
+Bendor	23	36	A	7	5	6	6	5	6	E	NS	Ag Ni Ga Asla1		F5 V	2	2	0
+Heya	24	2.5	B	6	8	7	8	4	5	6	S	Ag Ga Ri		K6 III M3 V	1	3	4
+Keng	24	5.5	E	5	7	1	8	C	A	5				G5 V M9 V	7	1	2
+Moughas	24	6.5	C	A	5	A	5	8	8	B		Ni Oc		K9 V M9 V	9	0	1
+Rethe	24	8.5	E	4	3	0	A	A	8	9		De Hi Na Po		G7 V	3	2	3
+Inthe	24	10.5	B	5	7	5	7	7	6	A	NS	Ag An Pi		F8 V	7	2	3
+Keanou	24	11.5	C	7	9	2	3	4	8	8	S	He Lo		M3 III M2 V	6	1	3
+Tureded	24	14.5	B	5	6	5	5	4	0	A		Ag Ni Pr		M3 V	8	1	4
+Vreibefger	24	15.5	E	5	8	1	6	4	2	6		Ni Pr RsE		K9 V	8	0	1
+La'Belle	24	16.5	C	5	6	4	2	2	3	6		Lo		F2 V M3 V	2	1	0
+Equus	24	17.5	B	5	5	A	8	5	8	C	S	Wa Ph Dolp1		F6 V M1 V	6	0	2
+Icetina	24	18.5	B	5	2	4	5	C	8	9	N	Ni	A	K9 V M8 V	7	0	1
+Cogri	24	19.5	C	A	6	A	6	5	4	9		Ni Oc Ri		M1 V	8	3	2
+Skull	24	20.5	B	4	2	3	7	C	7	B	N	Na Po Pi		M0 V M1 V	8	0	1
+Gandr	24	25.5	E	0	0	0	3	4	7	9		As Lo Va		M1 V	6	0	3
+Drolraw	24	26.5	D	A	B	6	4	1	3	8		Fl Lo		F1 V	2	0	4
+Paya	25	9	A	6	5	5	3	3	3	8	N	Lo Ni		F3 V	3	0	3
+Dhian	25	10	C	9	A	7	5	9	D	7		Fl Ni Da	A	K5 V	6	0	2
+Kinorb	25	12	C	5	4	9	4	3	3	B		Ni		F0 V K9 V	5	0	2
+Gileden	25	14	C	5	8	3	4	5	4	9		Lo		M1 V	2	0	3
+Pannet	25	19	D	9	C	5	5	7	7	7		Fl Ni		K5 V	2	2	4
+Garrincski	25	20	B	6	3	2	5	2	0	A	S	Ni Po		M0 V M7 V	4	1	0
+Heroni	25	21	A	6	4	4	9	B	9	A		Hi In Pz	A	F3 V	9	2	1
+Byret	25	23	B	5	8	5	7	2	6	9		Ag Ni Ri (Larianz)		G9 V	1	1	2
+Pimane	25	27	E	5	0	0	3	4	3	6		Lo Va		K0 V	9	0	3
+Burtson	25	34	C	5	6	2	6	6	7	9		Ni Ri O:2536		G4 V	6	0	2
+Squanine	25	36	A	3	0	0	5	5	0	E		Ni Va		F4 V M2 V	6	0	3
+Dobham	25	37	A	5	5	0	5	5	2	D	S	De Ni Po Asla2		G0 V	3	2	3
+Roihye	25	38	E	5	6	6	5	L	9	4		Lo AslaW		K6 V	8	1	4
+Thisbe	25	39	E	4	3	0	5	9	9	7		De Ni Po Da		F8 V	6	2	2
+Aramis	25	40	B	6	5	9	8	8	3	9		Asla0		K5 V	2	2	4
+Corfu	26	2.5	E	8	9	5	5	5	2	5	S	Ag Ni An Da Varg3	A	M0 V	3	2	2
+Focaline	26	7.5	E	A	8	8	5	4	4	7		Ag Ni Varg0		F3 V	9	2	4
+Depot	26	12.5	A	0	0	0	5	5	3	F	D	As Ni Va		G8 V M8 V	9	0	1
+Fulacin	26	13.5	A	6	7	4	5	5	3	F		Lo An		G3 V	8	1	0
+Natoko	26	20.5	B	8	8	7	9	A	B	A		Hi Ga An Pr Pz		F4 V	2	0	4
+Fosey	26	21.5	A	6	3	3	6	8	8	C		Na Ni Po		M3 V	8	2	0
+Mercury	26	24.5	A	6	5	8	6	6	3	A	NS	Ag Ni Mr		F7 V	4	0	4
+Tivid	26	27.5	C	5	3	4	4	7	7	A		Ni		M3 V	9	0	1
+Robin	26	37.5	C	0	0	0	5	9	C	C		As Ni Va Da Asla1	A	M2 V	2	1	2
+D'Mara	26	38.5	E	7	5	A	8	9	8	8		Wa		F4 V	2	1	0
+Keltchner	26	39.5	C	5	2	5	5	8	8	A		Ni O:2637		K6 V	8	0	2
+Lablon	27	1	A	6	4	6	6	8	9	A	IS	Ag Ni Varg4		M2 III M4 V	1	0	3
+Heguz	27	6	E	6	6	A	2	2	4	9		Lo Wa		K2 V M7 V	4	1	0
+Violante	27	8	C	6	6	9	7	A	5	A		Ni VargW	A	G2 V	5	2	0
+Risek	27	12	A	4	2	5	5	7	9	C	N	Ni		M2 V M3 V	4	0	1
+Porozlo	27	15	A	8	6	7	A	7	4	E		Hi Ga		M1 V M9 V	2	0	1
+Rylanor	27	16	A	4	3	4	A	3	4	F	NS	Hi Cp		M2 V	8	1	0
+Loneseda	27	20	C	8	6	A	4	1	5	9		Lo Wa		K9 V	7	0	5
+Carey	27	26	C	5	7	9	2	2	1	B		Lo		M2 V M2 V	2	1	0
+Duale	27	28	A	5	4	3	7	8	A	C		Po Pi Pz RsA	A	M0 V M2 V	4	0	1
+Tussinian	27	31	B	6	7	8	3	3	3	9		Lo		K0 V	6	2	0
+Edenelt	27	33	A	5	6	3	8	B	D	D		Ri Ph Pz		G7 V	1	3	4
+Conway	27	35	D	8	9	4	5	8	6	8	S	Ag Ni		F0 V M0 V	6	1	1
+Dodds	27	39	B	5	4	3	9	D	F	A	S	Hi In Po Pz		G7 V	8	2	3
+Valhalla	28	11.5	D	5	6	5	5	8	2	7		Ni Pa		G4 V	6	2	2
+Zivije	28	12.5	B	6	B	1	9	9	C	D		Fl He Hi In Pz	A	G6 V	4	2	1
+Jae Tellona	28	14.5	A	5	6	0	5	6	5	8	N	De Ni Pr Mr		F9 V	9	1	3
+Gerome	28	18.5	X	5	7	3	0	0	0	0		Ba Fo	R	K2 V	0	0	1
+Catuz	28	24.5	C	4	2	0	6	7	C	B		De He Ni Po Da		K8 V M6 V	5	1	0
+Meleto	28	27.5	C	6	7	5	1	0	0	9	S	Lo		F9 V	6	2	4
+Hexos	28	28.5	X	5	3	4	0	0	0	0		Ni	R	K1 V M2 V	0	2	3
+Pedase	28	30.5	C	4	1	5	3	4	6	7	S	Ba		M2 V M7 V	3	0	1
+Leander	28	32.5	E	6	9	5	2	3	3	5		Lo		K5 V M1 V	9	0	1
+Pepernium	28	33.5	D	5	6	7	5	3	0	5		Ag Ni Pr		M1 V	7	0	3
+Traltha	28	34.5	B	5	9	0	6	3	0	9		De He Ni An		F5 V	6	1	0
+Farquahar	28	39.5	C	6	2	5	5	6	3	8	S	Ni O:2739		M3 V	3	0	1
+Pavanne	29	5	C	3	1	0	4	4	2	A		Lo Ni Varg2		M0 V	6	2	5
+Carsten	29	6	D	4	2	7	5	0	2	C		Ni		M1 V	8	0	4
+Zila	29	8	D	5	5	6	7	2	C	7		Ag	A	K6 V M3 V	8	0	1
+Henoz	29	12	A	5	4	5	5	4	3	B		Ag Ni Chir0		F3 V	8	2	4
+Celepina	29	13	B	4	3	4	4	5	6	8	NS	Ni		M2 V	2	0	1
+Gitosy	29	18	B	0	0	0	6	7	6	B		As Na Ni Va		G6 V M3 V	6	1	0
+Moran	29	24	C	5	6	7	3	2	2	A	N	Lo	A	M3 V M7 V	4	0	1
+Maitz	29	27	A	2	0	1	5	1	1	D		Ic Ni Va		F1 V	3	2	2
+Mainz	29	30	C	5	5	3	4	5	2	B	S	Lo Po		K2 V M7 V	2	0	3
+Raydrad	29	33	E	9	9	4	6	7	A	6		Ag Ni		M7 III M2 V	6	0	3
+Zyra	29	34	C	5	5	5	4	4	8	9		Ni Pa		K8 V	7	0	1
+Murchison	29	35	B	5	4	4	4	3	3	9	N	Ni Pa		M5 III M3 V	8	0	5
+Hammermium	29	36	A	5	5	2	5	A	B	C		Ni Po Da		M3 V	9	3	5
+Thornnastor	29	40	D	5	3	4	4	4	3	9	S	Ni Chir2		M1 V	8	0	4
+Jesedipere	30	1.5	B	7	7	5	6	A	5	8	IS	Ag Ni VargW		F4 V	4	1	1
+Yebab	30	2.5	C	9	A	4	8	9	B	8		Fl Ph (Ebokin) Varg1		G9 V	1	1	2
+Nasemin	30	3.5	B	9	8	A	4	2	2	C	S	Ni Wa Lo Varg1		F5 V	8	1	2
+Zykoca	30	4.5	X	9	9	4	5	4	2	5		Ag Ni Da	R	K9 V	5	2	0
+Aramanx	30	5.5	B	6	5	7	9	9	8	A		Hi Ga Pz Varg1		G0 V	3	1	0
+Pysadi	30	8.5	C	5	7	6	6	D	7	6		Ag Ni Da		F9 V M1 V	2	0	1
+L'oeul d'Dieu	30	10.5	B	9	8	A	5	1	0	C	N	Ni Wa Pr		G1 V M9 V	8	0	2
+Belizo	30	15.5	B	8	9	5	6	4	6	9		Ag Ni Asla3		K1 V	9	2	3
+Kegena	30	16.5	D	8	6	9	5	6	9	5		Ni Pr Da O:2716	A	F6 V	2	2	4
+Heroni	30	17.5	C	7	A	0	6	1	4	6		He Ni		G5 V	8	2	0
+Pelouse	30	19.5	X	5	7	2	7	7	6	5		He Pi Fo (minor)	R	G9 V	3	3	4
+Somem	30	20.5	C	3	0	1	3	4	2	B		Ic Lo Va		M2 V M7 V	2	0	1
+Brodie	30	21.5	C	4	1	0	4	6	8	9		Ni O:3020		M1 III M7 V	3	1	4
+Rorise	30	22.5	C	9	9	4	1	0	0	A		Lo		M1 V	6	0	2
+Jokotre	30	24.5	B	6	5	4	8	D	9	9		Pa Ph Pz		K6 V	1	1	0
+Fornice	30	25.5	A	5	5	4	A	8	7	E		Hi		M0 V	5	0	2
+Grille	30	26.5	D	4	1	0	3	3	5	8		Lo		M2 V M2 V	1	0	1
+Palique	30	29.5	A	5	1	1	9	C	7	F		Hi Ic In Na Pz O:3025	A	M0 V M1 V	6	2	0
+Nexine	30	30.5	C	9	7	A	5	5	4	A	S	Ni Wa (Nexxies)		G9 V M2 V	2	0	1
+Katarulu	30	32.5	A	5	5	2	6	6	6	D	NW	Ni Po Cp		M0 V M9 V	8	0	1
+Prilissa	30	35.5	B	9	8	5	5	8	8	8		Ag Ni Pr		K4 V	6	1	0
+Tee-Tee-Tee	30	38.5	C	3	1	0	5	3	0	A		Ni		M2 V	1	0	2
+Youghal	30	39.5	A	A	9	5	4	7	5	C		Lo Asla2		K3 V	3	0	1
+Tenelphi	30	40.5	D	7	6	A	5	7	9	A	S	Ni Wa Pr		F4 V M0 V	4	0	1
+Rugbird	31	2	B	A	C	5	7	8	9	B	IN	Fl Ni Da VargW	A	M1 V	9	1	1
+Towers	31	3	B	5	4	4	5	4	8	A		Ni Pa Da Ag Varg1	A	G8 V K6 V	2	3	5
+Feneteman	31	4	C	4	2	2	2	0	0	C		He Lo Po Ni		G4 V M7 V	8	1	0
+Lewis	31	7	D	4	2	7	3	4	4	B		Ni Fo Lo	R	F8 V	8	0	1
+Aramis	31	10	A	5	A	0	6	5	3	C	NS	He Ni Cp De		M2 V	2	1	0
+Vinorian	31	11	B	8	7	9	6	1	0	9		Ni		M3 V M4 V	6	1	0
+Nutema	31	12	A	8	6	4	5	4	3	A	N	Lo		M3 V	8	2	2
+Huderu	31	14	X	5	7	5	0	0	0	0		Ba Fo	R	M0 V	0	2	0
+Cipatwe	31	18	B	5	5	8	7	9	A	9		Ag		M1 V	6	2	3
+Vanejen	31	19	C	6	8	6	8	5	4	8		Ga Ri Pa Ph Chir2 RsG		G1 V M0 V	5	2	0
+Nadrin	31	23	D	4	2	0	2	0	3	8	S	De He Lo Po		K5 V M1 V	7	2	0
+Mora	31	24	A	A	9	9	A	C	7	G	NS	Hi In Cs		F0 V	3	1	2
+Zephyr	31	38	C	8	9	5	5	6	6	3		Ag Ni Da O:3235	R	K5 V	6	0	4
+Chamois	31	39	B	5	4	4	6	4	2	9	S	Ag Ni		F9 V	8	2	3
+Junidy	32	2.5	A	4	3	4	A	E	E	D	IW	Hi Pz (Llellewyloly)6 Varg1		F7 V M2 V	4	1	0
+Patinir	32	7.5	C	0	0	0	6	3	2	A		As Na Ni Va An		F3 V	3	2	3
+Natoko	32	9.5	B	5	8	2	4	6	8	A	N	Lo Ni		M2 V M6 V	8	0	1
+Reacher	32	10.5	C	9	A	8	5	4	2	8		Fl Ni Da	A	G4 V	4	3	3
+Margesi	32	12.5	A	5	7	6	5	5	7	D	NS	Lo		F0 V	9	2	0
+Bevey	32	16.5	B	4	2	0	9	C	C	C	S	De He Hi In Na Po Pz		F4 V	2	2	4
+Tacaxeb	32	18.5	C	4	3	0	4	1	1	A		De Ni Po		A5 V M2 V	8	0	1
+Powaza	32	20.5	C	7	8	7	5	6	6	7		Ag Ni Ga Pr O:3218		K4 V M2 V	3	3	2
+Dojodo	32	23.5	C	5	1	2	3	1	1	8	S	Ic Lo Chir1		M0 V	8	1	0
+Fenl's Gren	32	28.5	C	6	4	7	3	4	6	B		Lo Da	A	K7 V	7	2	3
+Ramiva	32	33.5	B	3	1	0	8	A	7	B		Na Pi		M3 V	1	1	4
+Trin	32	35.5	C	8	9	4	8	6	1	6	N	Mr		G0 V	5	0	1
+Hazel	32	36.5	B	6	4	5	7	4	7	9		Ag Pi Pz		F1 V M3 V	2	1	0

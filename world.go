@@ -103,7 +103,7 @@ func worldHash(fromStar *star) *rand.Rand {
 	return rand.New(rand.NewSource(int64(id.Sum64())))
 }
 
-func worldFr omStar(fromStarID int) (newWorld *world) {
+func worldFromStar(fromStarID int) (newWorld *world) {
 	random1s := worldHash(stars[fromStarID])
 
 	starPort := getStarPort(random1s)
