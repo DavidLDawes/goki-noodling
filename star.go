@@ -300,7 +300,23 @@ var (
 		pixels:      2,
 	}
 
-	starDetailsByClass = [7]classDetails{classO, classB, classA, classF, classG, classK, classM}
+	classR = classDetails{
+		class:       "R",
+		brightColor: color.RGBA{R: 0, G: tween, B: 0, A: opaque},
+		medColor:    color.RGBA{R: 0, G: tween, B: 0, A: opaque},
+		dimColor:    color.RGBA{R: 0, G: threeQuarters, B: 0, A: opaque},
+		odds:        1.7645,
+		fudge:       .05,
+		minMass:     0.04,
+		deltaMass:   .03,
+		minRadii:    0.8,
+		deltaRadii:  .15,
+		minLum:      1.5,
+		deltaLum:    3.5,
+		pixels:      2,
+	}
+
+	starDetailsByClass = [8]classDetails{classO, classB, classA, classF, classG, classK, classM, classR}
 	// classByZoom        = [11]int{7, 7, 7, 7, 7, 7, 6, 5, 4, 3, 2}
 )
 
@@ -1248,7 +1264,8 @@ var starPositionsDetails = []positionDetail {
 }
 
 func getStarDetails() []*star {
-	stars := make([]*star, len(starPositionsDetails))
+	rogues2stars := 2
+	stars := make([]*star, (rogues2stars + 1) * len(starPositionsDetails))
 	for i, positionDetails := range starPositionsDetails {
 		stars[i] = &star{}
 		stars[i].x = positionDetails.starposition.x/10
@@ -1261,6 +1278,19 @@ func getStarDetails() []*star {
 		stars[i].class = positionDetails.starDetails.class
 	}
 
+	rogueCount := len(starPositionsDetails)
+	for rogueCount < len(starPositionsDetails) * (rogues2stars + 1) {
+		stars[rogueCount] = &star{}
+		stars[rogueCount].x = rand.Float32() * 2.0 - 1.0
+		stars[rogueCount].y = rand.Float32() * 2.0 - 1.0
+		stars[rogueCount].z = rand.Float32() * 2.0 - 1.0
+		stars[rogueCount].brightColor = classR.brightColor
+		stars[rogueCount].dimColor = classR.dimColor
+		stars[rogueCount].pixels = 4
+		stars[rogueCount].radii = 400000.0
+		stars[rogueCount].class = classR.class
+		rogueCount++
+	}
 	return stars
 }
 
