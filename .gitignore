@@ -17,6 +17,9 @@ vendor/
 # IntelliJ noise
 .idea
 
+# In case we are using MS Visual Studio Code
+.vscode
+
 # the executable, if built
 gogi3
 
